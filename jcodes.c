@@ -6,63 +6,80 @@
 #include <string.h>
 #include <assert.h>
 
+#define QUEUE_MAX 1000
+
+Display *display;
+Window window;
+XEvent event;
+XEvent fake_event;
+XEvent queue[QUEUE_MAX] = {{0}};
+
 // We receive X errors if we grab keys that are already grabbed.  This is not
 // really fatal so we catch them.
-int failed_grab_count = 0;
 int (*original_error_handler)(Display* display, XErrorEvent* error);
 
-int HandleError(Display* display, XErrorEvent* error) {
+int HandleError(Display* display, XErrorEvent* error)
+{
   if (error->error_code == BadAccess) {
-    ++failed_grab_count;
-    return 0;
-  } else {
-    return original_error_handler(display, error);
+    fprintf(stderr, "Failed to grab key! Another application has already claimed a key I need. Quitting.\n");
+    exit(EXIT_FAILURE);
   }
+  return original_error_handler(display, error);
 }
 
-int main(int argc, char* argv[]) {
+void grab(KeySym ks)
+{
+  KeyCode kc = XKeysymToKeycode(display, ks);
+  XGrabKey(display, kc, 0, window, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(display, kc, LockMask, window, True, GrabModeAsync, GrabModeAsync);
+}
 
-  // Open the display and get the root window.
-  Display* display = XOpenDisplay(NULL);
+void ungrab(KeySym ks)
+{
+  KeyCode kc = XKeysymToKeycode(display, ks);
+  XUngrabKey(display, kc, 0, window);
+  XUngrabKey(display, kc, LockMask, window);
+}
 
+int main(int argc, char* argv[])
+{
+  display = XOpenDisplay(NULL);
   if (display == NULL) {
-    fprintf(stderr, "Couldn't open display.\n");
-    return 1;
+    fprintf(stderr, "Couldn't open the default display.\n");
+    exit(EXIT_FAILURE);
   }
 
-  Window window = DefaultRootWindow(display);
+  window = DefaultRootWindow(display);
 
-  XSetWindowAttributes xswa;
-  xswa.event_mask = FocusChangeMask;
-  XChangeWindowAttributes(display, window, CWEventMask, &xswa);
+  int error = XChangeWindowAttributes(
+      display,
+      window,
+      CWEventMask,
+      &(XSetWindowAttributes){ .event_mask = FocusChangeMask }
+  );
+
+  if( error == Success )
+    fprintf(stderr, "Succesfully registered for FocusChange events on root window.\n");
+  else if( error == BadRequest )
+    fprintf(stderr, "Got BadRequest when registering for FocusChange events on root window. Ignoring.\n");
+  else
+  {
+    fprintf(stderr, "Couldn't register for FocusChange events on root window. Error: %d\n",error);
+    exit(EXIT_FAILURE);
+  }
 
   // Often, some keys are already grabbed, e.g. by the desktop environment.
   // Set an error handler so that we can ignore those.
   original_error_handler = XSetErrorHandler(&HandleError);
 
-  // Establish grabs to intercept the events we want.
-  int keycode = XKeysymToKeycode(display, XK_J);
-  XGrabKey(display, keycode, 0, window, True, GrabModeAsync, GrabModeAsync);
-
-  // Make sure all errors have been reported, then print how many errors we saw.
-  XSync(display, False);
-  if (failed_grab_count != 0) {
-    fprintf(stderr, "Failed to grab %d key combinations.\n", failed_grab_count);
-    fprintf(stderr,
-      "This is probably because some hotkeys are already grabbed by the system.\n"
-      "Unfortunately, these system-wide hotkeys cannot be automatically remapped by\n"
-      "this tool.  However, you can usually configure them manually.\n");
-  }
-
-  XEvent event;
-  XEvent fake_event;
-  fake_event.type = 0;
+  // grab the J key
+  grab(XK_J);
 
   int killcount = 0;
 
   // Event loop.
   for (;;) {
-    if( killcount++ > 100 ) exit(0);
+    if( killcount++ > 100 ) exit(EXIT_SUCCESS);
 
     XNextEvent(display, &event);
 
@@ -96,6 +113,7 @@ int main(int argc, char* argv[]) {
         XSendEvent(display, fake_event.xkey.window, True, 0, &fake_event);
 
         fake_event.type = 0;
+        ungrab(XK_J);
 
         break;
       }
