@@ -15,22 +15,36 @@ struct item {
   KeySym sym;
 };
 
-KeySym level1[] = { XK_J, 0 };
-KeySym level2[] = { XK_W, XK_E, XK_I, XK_O, XK_A, XK_S, XK_D, XK_F, XK_J, XK_K, XK_L, XK_semicolon, XK_C, XK_M, 0 };
+KeySym level1[] = {                                                 XK_J,                                       };
+KeySym level2[] = {                                     XK_D, XK_F,       XK_K, XK_L,                           };
+KeySym level3[] = { XK_W, XK_E, XK_I, XK_O, XK_A, XK_S,                               XK_semicolon, XK_C, XK_M, };
 
 Display *display;
 Window window;
 XEvent event;
 struct item queue[QUEUE_MAX] = {{0}};
 int qlen = 0;
+int level = 1;
 
 // We receive X errors if we grab keys that are already grabbed.  This is not
 // really fatal so we catch them.
 int (*original_error_handler)(Display* display, XErrorEvent* error);
 
-int HandleError(Display* display, XErrorEvent* error)
+#define IN(needle,haystack) find_in_ints((int)(needle),(int*)(haystack),COUNT(haystack))
+int find_in_ints(int needle, int *haystack, int nr)
 {
-  if (error->error_code == BadAccess) {
+  int i;
+  for( i=0; i<nr; i++ ) {
+    fprintf(stderr, "Comparing: %d ?= %d\n", needle, haystack[i]);
+    if( needle==haystack[i] )
+      return 1;
+  }
+  return 0;
+}
+
+int handle_error(Display* display, XErrorEvent* error)
+{
+  if( error->error_code == BadAccess ) {
     fprintf(stderr, "Failed to grab key! Another application has already claimed a key I need. Quitting.\n");
     exit(EXIT_FAILURE);
   }
@@ -63,7 +77,7 @@ void enqueue(XEvent event)
     return;
   }
 
-  struct item *it = queue + qlen;
+  struct item *it = queue + qlen++;
   it->exists = 1;
   it->ev = event;
   it->sym = XKeycodeToKeysym(display, event.xkey.keycode, 0);
@@ -75,7 +89,20 @@ void enqueue(XEvent event)
       (int)it->sym
   );
 
-  qlen++;
+  int i;
+
+  if( level==1 && IN(it->sym, level1) ) {
+    fprintf(stderr, "LEVEL1\n");
+    for( i=0; i<COUNT(level2); i++ )
+      grab(level2[i]);
+    level = 2;
+  }
+  else if( level==2 && IN(it->sym, level2) ) {
+    fprintf(stderr, "LEVEL2\n");
+    for( i=0; i<COUNT(level3); i++ )
+      grab(level3[i]);
+    level = 3;
+  }
 }
 
 void dequeue()
@@ -128,7 +155,7 @@ int main(int argc, char* argv[])
     exit(EXIT_FAILURE);
   }
 
-  original_error_handler = XSetErrorHandler(&HandleError);
+  original_error_handler = XSetErrorHandler(&handle_error);
 
   // grab the level 1 key(s)
   int i;
