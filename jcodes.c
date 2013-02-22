@@ -7,12 +7,22 @@
 #include <assert.h>
 
 #define QUEUE_MAX 1000
+#define COUNT(x) (sizeof (x) / sizeof *(x))
+
+struct item {
+  int exists;
+  XEvent ev;
+  KeySym sym;
+};
+
+KeySym level1[] = { XK_J, 0 };
+KeySym level2[] = { XK_W, XK_E, XK_I, XK_O, XK_A, XK_S, XK_D, XK_F, XK_J, XK_K, XK_L, XK_semicolon, XK_C, XK_M, 0 };
 
 Display *display;
 Window window;
 XEvent event;
-XEvent fake_event;
-XEvent queue[QUEUE_MAX] = {{0}};
+struct item queue[QUEUE_MAX] = {{0}};
+int qlen = 0;
 
 // We receive X errors if we grab keys that are already grabbed.  This is not
 // really fatal so we catch them.
@@ -31,14 +41,64 @@ void grab(KeySym ks)
 {
   KeyCode kc = XKeysymToKeycode(display, ks);
   XGrabKey(display, kc, 0, window, True, GrabModeAsync, GrabModeAsync);
-  XGrabKey(display, kc, LockMask, window, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(display, kc, Mod2Mask, window, True, GrabModeAsync, GrabModeAsync);
 }
 
 void ungrab(KeySym ks)
 {
   KeyCode kc = XKeysymToKeycode(display, ks);
   XUngrabKey(display, kc, 0, window);
-  XUngrabKey(display, kc, LockMask, window);
+  XUngrabKey(display, kc, Mod2Mask, window);
+}
+
+const char *event2str(XEvent ev)
+{
+  return ev.type==KeyPress ? "KeyPress" : "KeyRelease";
+}
+
+void enqueue(XEvent event)
+{
+  if( qlen >= QUEUE_MAX ) {
+    fprintf(stderr, "Queue is full!\n");
+    return;
+  }
+
+  struct item *it = queue + qlen;
+  it->exists = 1;
+  it->ev = event;
+  it->sym = XKeycodeToKeysym(display, event.xkey.keycode, 0);
+
+  fprintf(stderr,
+      "      %s event sym '%s', raw: %c\n",
+      event2str(it->ev),
+      XKeysymToString(it->sym),
+      (int)it->sym
+  );
+
+  qlen++;
+}
+
+void dequeue()
+{
+  // Find the focused window and send the queued events to it.
+  int i;
+  Window target;
+  XGetInputFocus(display, &target, &(int){0});
+
+  for( i=0; i<qlen; i++ ) {
+    struct item *it = queue + i;
+    it->ev.xkey.window = target;
+    XSendEvent(display, target, True, 0, &it->ev);
+
+    fprintf(stderr,
+        " Sent %s event sym '%s', raw: %c\n",
+        event2str(it->ev),
+        XKeysymToString(it->sym),
+        (int)it->sym
+    );
+  }
+
+  qlen = 0;
 }
 
 int main(int argc, char* argv[])
@@ -68,58 +128,31 @@ int main(int argc, char* argv[])
     exit(EXIT_FAILURE);
   }
 
-  // Often, some keys are already grabbed, e.g. by the desktop environment.
-  // Set an error handler so that we can ignore those.
   original_error_handler = XSetErrorHandler(&HandleError);
 
-  // grab the J key
-  grab(XK_J);
+  // grab the level 1 key(s)
+  int i;
+  for( i=0; i<COUNT(level1); i++ )
+    grab(level1[i]);
 
-  int killcount = 0;
-
-  // Event loop.
+  // Actual title code
   for (;;) {
-    if( killcount++ > 100 ) exit(EXIT_SUCCESS);
-
     XNextEvent(display, &event);
 
     switch (event.type) {
       case KeyPress:
-      case KeyRelease: {
-        if (event.xkey.send_event) {
-          fprintf(stderr, "SendEvent loop?\n");
-          break;
-        }
-
-        fprintf(stderr, "Keycode: %d\n", event.xkey.keycode);
-        fake_event = event;
-        fake_event.xkey.keycode = XKeysymToKeycode(display, XK_dollar);
-
+      case KeyRelease:
+        if (!event.xkey.send_event) // avoid event feedback loop
+          enqueue(event);
         break;
-      }
-      case FocusOut: {
-        // nothing to fake?
-        if( !fake_event.type )
-          break;
 
-        fprintf(stderr, "FocusOut event\n", event.type);
-
-        // Find the focused window and send the buffered events to it.
-        int junk;
-        XGetInputFocus(display, &fake_event.xkey.window, &junk);
-        fake_event.type = KeyPress;
-        XSendEvent(display, fake_event.xkey.window, True, 0, &fake_event);
-        fake_event.type = KeyRelease;
-        XSendEvent(display, fake_event.xkey.window, True, 0, &fake_event);
-
-        fake_event.type = 0;
-        ungrab(XK_J);
-
+      case FocusOut:
+        dequeue();
         break;
-      }
-      case FocusIn: {
+
+      case FocusIn:
         break;
-      }
+
       default:
         fprintf(stderr, "Unknown event: %d\n", event.type);
         break;
