@@ -15,9 +15,9 @@ struct item {
   KeySym sym;
 };
 
-KeySym level1[] = {                                                 XK_J,                                       };
-KeySym level2[] = {                                     XK_D, XK_F,       XK_K, XK_L,                           };
-KeySym level3[] = { XK_W, XK_E, XK_I, XK_O, XK_A, XK_S,                               XK_semicolon, XK_C, XK_M, };
+KeySym level1[] = { XK_j, };
+KeySym level2[] = { XK_d, XK_f, XK_k, XK_l, };
+KeySym level3[] = { XK_w, XK_e, XK_i, XK_o, XK_a, XK_s, XK_d, XK_f, XK_k, XK_l, XK_semicolon, XK_c, XK_m, };
 
 Display *display;
 Window window;
@@ -25,17 +25,18 @@ XEvent event;
 struct item queue[QUEUE_MAX] = {{0}};
 int qlen = 0;
 int level = 1;
+KeySym seq[3] = {0};
 
 // We receive X errors if we grab keys that are already grabbed.  This is not
 // really fatal so we catch them.
 int (*original_error_handler)(Display* display, XErrorEvent* error);
 
-#define IN(needle,haystack) find_in_ints((int)(needle),(int*)(haystack),COUNT(haystack))
-int find_in_ints(int needle, int *haystack, int nr)
+#define IN(needle,haystack) find_in((needle),(haystack),COUNT(haystack))
+int find_in(KeySym needle, KeySym *haystack, int nr)
 {
   int i;
   for( i=0; i<nr; i++ ) {
-    fprintf(stderr, "Comparing: %d ?= %d\n", needle, haystack[i]);
+    fprintf(stderr, "Comparing: %c ?= %c\n", (int)needle, (int)haystack[i]);
     if( needle==haystack[i] )
       return 1;
   }
@@ -77,6 +78,13 @@ void enqueue(XEvent event)
     return;
   }
 
+  static KeySym sym1 = 0;
+  static KeySym sym2 = 0;
+  static KeyCode release_find = 0;
+  static KeyCode release_replace = 0;
+  static KeyCode release_kill1 = 0;
+  static KeyCode release_kill2 = 0;
+
   struct item *it = queue + qlen++;
   it->exists = 1;
   it->ev = event;
@@ -91,17 +99,95 @@ void enqueue(XEvent event)
 
   int i;
 
-  if( level==1 && IN(it->sym, level1) ) {
-    fprintf(stderr, "LEVEL1\n");
-    for( i=0; i<COUNT(level2); i++ )
-      grab(level2[i]);
+  #define KEYSWAP(newkeysym,newstate) do{                        \
+    release_find = it->ev.xkey.keycode;                          \
+    it->ev.xkey.keycode = XKeysymToKeycode(display,(newkeysym)); \
+    if( newstate!=AnyModifier )                                  \
+      it->ev.xkey.state = newstate;                              \
+    release_replace = it->ev.xkey.keycode;                       \
+  } while(0)
+
+  #define REMOVE(keysym) do {                          \
+    KeyCode kc = XKeysymToKeycode(display,(keysym));   \
+    int phase = 1;                                     \
+    for( i=0; i<qlen-1; i++ ) {                        \
+      struct item *it = queue + i;                     \
+      if( it->sym!=keysym )                            \
+        continue;                                      \
+      if( phase==1 && it->ev.type==KeyPress ) {        \
+        it->exists = 0;                                \
+        phase = 2;                                     \
+      }                                                \
+      else if( phase==2 && it->ev.type==KeyRelease ) { \
+        it->exists = 0;                                \
+        phase = 3;                                     \
+        break;                                         \
+      }                                                \
+    }                                                  \
+    if( phase==2 )                                     \
+      if( !release_kill1 )                             \
+        release_kill1 = it->ev.xkey.keycode;           \
+      else                                             \
+        release_kill2 = it->ev.xkey.keycode;           \
+  } while(0)
+
+  if( event.type==KeyRelease ) {
+    if( release_find==it->ev.xkey.keycode )
+    {
+      it->ev.xkey.keycode = release_replace;
+      release_find = 0;
+      release_replace = 0;
+    }
+    if( release_kill1==it->ev.xkey.keycode )
+    {
+      it->exists = 0;
+      release_kill1 = 0;
+    }
+    if( release_kill2==it->ev.xkey.keycode )
+    {
+      it->exists = 0;
+      release_kill2 = 0;
+    }
+  }
+  else if( level==1 ) {
+    int status = XGrabKeyboard(display, window, 0, GrabModeAsync, GrabModeAsync, CurrentTime);
+    fprintf(stderr, "LEVEL1: XGrabKeyboard status: %d\n", status);
+    sym1 = XK_j;
     level = 2;
   }
-  else if( level==2 && IN(it->sym, level2) ) {
-    fprintf(stderr, "LEVEL2\n");
-    for( i=0; i<COUNT(level3); i++ )
-      grab(level3[i]);
-    level = 3;
+  else if( level==2 ) {
+    #define L2CODE(from,to)                                                      \
+      ( it->sym==from ) {                                                        \
+        KEYSWAP(to,AnyModifier);                                                 \
+        REMOVE(sym1);                                                            \
+        XUngrabKeyboard(display, CurrentTime);                                   \
+        fprintf(stderr, "LEVEL2: XUngrabKeyboard, XK_j " #from " -> " #to "\n"); \
+        level = 1;                                                               \
+      }
+    if L2CODE(XK_m,XK_Return)
+    else if L2CODE(XK_w,XK_BackSpace)
+    else if L2CODE(XK_x,XK_Delete)
+    else if L2CODE(XK_h,XK_Home)
+    else if L2CODE(XK_z,XK_End)
+    else if( IN(it->sym, level2) ) {
+      sym2 = it->sym;
+      level = 3;
+    }
+    else {
+      XUngrabKeyboard(display, CurrentTime);
+      fprintf(stderr, "LEVEL2: XUngrabKeyboard\n");
+      level = 1;
+    }
+  }
+  else {
+    if( sym2==XK_d && it->sym==XK_w ) {
+      KEYSWAP(XK_dollar,ShiftMask);
+      REMOVE(sym1);
+      REMOVE(sym2);
+    }
+    XUngrabKeyboard(display, CurrentTime);
+    fprintf(stderr, "LEVEL3: XUngrabKeyboard\n");
+    level = 1;
   }
 }
 
@@ -114,6 +200,8 @@ void dequeue()
 
   for( i=0; i<qlen; i++ ) {
     struct item *it = queue + i;
+    if( !it->exists )
+      continue;
     it->ev.xkey.window = target;
     XSendEvent(display, target, True, 0, &it->ev);
 
