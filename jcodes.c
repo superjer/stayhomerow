@@ -164,11 +164,12 @@ void enqueue(XEvent event)
         fprintf(stderr, "LEVEL2: XUngrabKeyboard, XK_j " #from " -> " #to "\n"); \
         level = 1;                                                               \
       }
-    if L2CODE(XK_m,XK_Return)
-    else if L2CODE(XK_w,XK_BackSpace)
-    else if L2CODE(XK_x,XK_Delete)
-    else if L2CODE(XK_h,XK_Home)
-    else if L2CODE(XK_z,XK_End)
+
+    if      L2CODE(XK_j, XK_j         )
+    else if L2CODE(XK_z, XK_Escape    )
+    else if L2CODE(XK_w, XK_BackSpace )
+    else if L2CODE(XK_h, XK_Home      )
+    else if L2CODE(XK_x, XK_Delete    )
     else if( IN(it->sym, level2) ) {
       sym2 = it->sym;
       level = 3;
@@ -180,11 +181,54 @@ void enqueue(XEvent event)
     }
   }
   else {
-    if( sym2==XK_d && it->sym==XK_w ) {
-      KEYSWAP(XK_dollar,ShiftMask);
-      REMOVE(sym1);
-      REMOVE(sym2);
-    }
+    #define L3CODE(from2,from3,to,mask)  \
+      ( sym2==from2 && it->sym==from3 ) { \
+        KEYSWAP(to,mask);                  \
+        REMOVE(sym1);                      \
+        REMOVE(sym2);                      \
+      }
+
+
+    // JK -- keys in gerenal
+    if      L3CODE(XK_k, XK_j        , XK_Return, 0)
+    else if L3CODE(XK_k, XK_k        , XK_Return, 0)
+    else if L3CODE(XK_k, XK_l        , XK_End   , 0)
+    // JD -- digits
+    else if L3CODE(XK_d, XK_a        , XK_1     , 0)
+    else if L3CODE(XK_d, XK_s        , XK_2     , 0)
+    else if L3CODE(XK_d, XK_d        , XK_3     , 0)
+    else if L3CODE(XK_d, XK_f        , XK_4     , 0)
+    else if L3CODE(XK_d, XK_g        , XK_5     , 0)
+    else if L3CODE(XK_d, XK_h        , XK_6     , 0)
+    else if L3CODE(XK_d, XK_j        , XK_7     , 0)
+    else if L3CODE(XK_d, XK_k        , XK_8     , 0)
+    else if L3CODE(XK_d, XK_l        , XK_9     , 0)
+    else if L3CODE(XK_d, XK_semicolon, XK_0     , 0)
+    // JL -- f keys
+    else if L3CODE(XK_f, XK_a        , XK_F1    , 0)
+    else if L3CODE(XK_f, XK_s        , XK_F2    , 0)
+    else if L3CODE(XK_f, XK_d        , XK_F3    , 0)
+    else if L3CODE(XK_f, XK_f        , XK_F4    , 0)
+    else if L3CODE(XK_f, XK_g        , XK_F5    , 0)
+    else if L3CODE(XK_f, XK_h        , XK_F6    , 0)
+    else if L3CODE(XK_f, XK_j        , XK_F7    , 0)
+    else if L3CODE(XK_f, XK_k        , XK_F8    , 0)
+    else if L3CODE(XK_f, XK_l        , XK_F9    , 0)
+    else if L3CODE(XK_f, XK_semicolon, XK_F10   , 0)
+    else if L3CODE(XK_f, XK_w        , XK_F11   , 0)
+    else if L3CODE(XK_f, XK_e        , XK_F12   , 0)
+    // JL -- lucky charms
+    else if L3CODE(XK_l, XK_a        , XK_exclam     , ShiftMask)
+    else if L3CODE(XK_l, XK_s        , XK_at         , ShiftMask)
+    else if L3CODE(XK_l, XK_d        , XK_numbersign , ShiftMask)
+    else if L3CODE(XK_l, XK_f        , XK_dollar     , ShiftMask)
+    else if L3CODE(XK_l, XK_g        , XK_percent    , ShiftMask)
+    else if L3CODE(XK_l, XK_h        , XK_asciicircum, ShiftMask)
+    else if L3CODE(XK_l, XK_j        , XK_ampersand  , ShiftMask)
+    else if L3CODE(XK_l, XK_k        , XK_asterisk   , ShiftMask)
+    else if L3CODE(XK_l, XK_l        , XK_parenleft  , ShiftMask)
+    else if L3CODE(XK_l, XK_semicolon, XK_parenright , ShiftMask)
+
     XUngrabKeyboard(display, CurrentTime);
     fprintf(stderr, "LEVEL3: XUngrabKeyboard\n");
     level = 1;
