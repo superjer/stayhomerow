@@ -16,8 +16,7 @@ struct item {
 };
 
 KeySym level1[] = { XK_j, };
-KeySym level2[] = { XK_d, XK_f, XK_k, XK_l, };
-KeySym level3[] = { XK_w, XK_e, XK_i, XK_o, XK_a, XK_s, XK_d, XK_f, XK_k, XK_l, XK_semicolon, XK_c, XK_m, };
+KeySym level2[] = { XK_k, XK_n, XK_m, };
 
 Display *display;
 Window window;
@@ -166,10 +165,17 @@ void enqueue(XEvent event)
       }
 
     if      L2CODE(XK_j, XK_j         )
-    else if L2CODE(XK_z, XK_Escape    )
-    else if L2CODE(XK_w, XK_BackSpace )
+    //                q: quit
+    else if L2CODE(XK_w, XK_Page_Up   )
+    else if L2CODE(XK_d, XK_BackSpace )
+    else if L2CODE(XK_f, XK_Escape    )
+    //                g: repeat
     else if L2CODE(XK_h, XK_Home      )
+    else if L2CODE(XK_l, XK_End       )
+    else if L2CODE(XK_z, XK_Page_Down )
     else if L2CODE(XK_x, XK_Delete    )
+    //                c: control
+    //                v: shift
     else if( IN(it->sym, level2) ) {
       sym2 = it->sym;
       level = 3;
@@ -181,53 +187,63 @@ void enqueue(XEvent event)
     }
   }
   else {
-    #define L3CODE(from2,from3,to,mask)  \
+    #define L3CODE(from2,from3,to,mask)   \
       ( sym2==from2 && it->sym==from3 ) { \
-        KEYSWAP(to,mask);                  \
-        REMOVE(sym1);                      \
-        REMOVE(sym2);                      \
+        KEYSWAP(to,mask);                 \
+        REMOVE(sym1);                     \
+        REMOVE(sym2);                     \
       }
 
-
-    // JK -- keys in gerenal
-    if      L3CODE(XK_k, XK_j        , XK_Return, 0)
-    else if L3CODE(XK_k, XK_k        , XK_Return, 0)
-    else if L3CODE(XK_k, XK_l        , XK_End   , 0)
-    // JD -- digits
-    else if L3CODE(XK_d, XK_a        , XK_1     , 0)
-    else if L3CODE(XK_d, XK_s        , XK_2     , 0)
-    else if L3CODE(XK_d, XK_d        , XK_3     , 0)
-    else if L3CODE(XK_d, XK_f        , XK_4     , 0)
-    else if L3CODE(XK_d, XK_g        , XK_5     , 0)
-    else if L3CODE(XK_d, XK_h        , XK_6     , 0)
-    else if L3CODE(XK_d, XK_j        , XK_7     , 0)
-    else if L3CODE(XK_d, XK_k        , XK_8     , 0)
-    else if L3CODE(XK_d, XK_l        , XK_9     , 0)
-    else if L3CODE(XK_d, XK_semicolon, XK_0     , 0)
-    // JL -- f keys
-    else if L3CODE(XK_f, XK_a        , XK_F1    , 0)
-    else if L3CODE(XK_f, XK_s        , XK_F2    , 0)
-    else if L3CODE(XK_f, XK_d        , XK_F3    , 0)
-    else if L3CODE(XK_f, XK_f        , XK_F4    , 0)
-    else if L3CODE(XK_f, XK_g        , XK_F5    , 0)
-    else if L3CODE(XK_f, XK_h        , XK_F6    , 0)
-    else if L3CODE(XK_f, XK_j        , XK_F7    , 0)
-    else if L3CODE(XK_f, XK_k        , XK_F8    , 0)
-    else if L3CODE(XK_f, XK_l        , XK_F9    , 0)
-    else if L3CODE(XK_f, XK_semicolon, XK_F10   , 0)
-    else if L3CODE(XK_f, XK_w        , XK_F11   , 0)
-    else if L3CODE(XK_f, XK_e        , XK_F12   , 0)
-    // JL -- lucky charms
-    else if L3CODE(XK_l, XK_a        , XK_exclam     , ShiftMask)
-    else if L3CODE(XK_l, XK_s        , XK_at         , ShiftMask)
-    else if L3CODE(XK_l, XK_d        , XK_numbersign , ShiftMask)
-    else if L3CODE(XK_l, XK_f        , XK_dollar     , ShiftMask)
-    else if L3CODE(XK_l, XK_g        , XK_percent    , ShiftMask)
-    else if L3CODE(XK_l, XK_h        , XK_asciicircum, ShiftMask)
-    else if L3CODE(XK_l, XK_j        , XK_ampersand  , ShiftMask)
-    else if L3CODE(XK_l, XK_k        , XK_asterisk   , ShiftMask)
-    else if L3CODE(XK_l, XK_l        , XK_parenleft  , ShiftMask)
-    else if L3CODE(XK_l, XK_semicolon, XK_parenright , ShiftMask)
+    // JM -- movement
+    if      L3CODE(XK_m, XK_h         , XK_Left       , 0)
+    else if L3CODE(XK_m, XK_j         , XK_Down       , 0)
+    else if L3CODE(XK_m, XK_k         , XK_Up         , 0)
+    else if L3CODE(XK_m, XK_l         , XK_Right      , 0)
+    // JN -- numpad
+    else if L3CODE(XK_n, XK_8         , XK_KP_Divide  , 0)
+    else if L3CODE(XK_n, XK_9         , XK_KP_Multiply, 0)
+    else if L3CODE(XK_n, XK_0         , XK_KP_Subtract, 0)
+    else if L3CODE(XK_n, XK_u         , XK_KP_7       , 0)
+    else if L3CODE(XK_n, XK_i         , XK_KP_8       , 0)
+    else if L3CODE(XK_n, XK_o         , XK_KP_9       , 0)
+    else if L3CODE(XK_n, XK_p         , XK_KP_Add     , 0)
+    else if L3CODE(XK_n, XK_j         , XK_KP_4       , 0)
+    else if L3CODE(XK_n, XK_k         , XK_KP_5       , 0)
+    else if L3CODE(XK_n, XK_l         , XK_KP_6       , 0)
+    else if L3CODE(XK_n, XK_semicolon , XK_KP_Add     , 0)
+    else if L3CODE(XK_n, XK_m         , XK_KP_1       , 0)
+    else if L3CODE(XK_n, XK_comma     , XK_KP_2       , 0)
+    else if L3CODE(XK_n, XK_period    , XK_KP_3       , 0)
+    else if L3CODE(XK_n, XK_slash     , XK_KP_Enter   , 0)
+    else if L3CODE(XK_n, XK_space     , XK_KP_0       , 0)
+    else if L3CODE(XK_n, XK_Alt_R     , XK_KP_Decimal , 0)
+    else if L3CODE(XK_n, XK_Super_R   , XK_KP_Enter   , 0)
+    // JK -- Symbol and punctuation keys
+    else if L3CODE(XK_k, XK_q         , XK_quotedbl   , ShiftMask)
+    else if L3CODE(XK_k, XK_w         , XK_backslash  ,         0)
+    else if L3CODE(XK_k, XK_e         , XK_equal      ,         0)
+    else if L3CODE(XK_k, XK_r         , XK_asciicircum, ShiftMask)
+    else if L3CODE(XK_k, XK_t         , XK_asciitilde , ShiftMask)
+    else if L3CODE(XK_k, XK_o         , XK_parenright , ShiftMask)
+    else if L3CODE(XK_k, XK_i         , XK_parenleft  , ShiftMask)
+    else if L3CODE(XK_k, XK_p         , XK_plus       , ShiftMask)
+    else if L3CODE(XK_k, XK_a         , XK_at         , ShiftMask)
+    else if L3CODE(XK_k, XK_s         , XK_asterisk   , ShiftMask)
+    else if L3CODE(XK_k, XK_d         , XK_dollar     , ShiftMask)
+    else if L3CODE(XK_k, XK_f         , XK_greater    , ShiftMask)
+    else if L3CODE(XK_k, XK_g         , XK_grave      ,         0)
+    else if L3CODE(XK_k, XK_h         , XK_numbersign , ShiftMask)
+    else if L3CODE(XK_k, XK_j         , XK_braceleft  , ShiftMask)
+    else if L3CODE(XK_k, XK_k         , XK_braceright , ShiftMask)
+    else if L3CODE(XK_k, XK_l         , XK_underscore , ShiftMask)
+    else if L3CODE(XK_k, XK_semicolon , XK_colon      , ShiftMask)
+    else if L3CODE(XK_k, XK_x         , XK_exclam     , ShiftMask)
+    else if L3CODE(XK_k, XK_c         , XK_percent    , ShiftMask)
+    else if L3CODE(XK_k, XK_v         , XK_bar        , ShiftMask)
+    else if L3CODE(XK_k, XK_n         , XK_ampersand  , ShiftMask)
+    else if L3CODE(XK_k, XK_m         , XK_minus      ,         0)
+    else if L3CODE(XK_k, XK_comma     , XK_greater    , ShiftMask)
+    else if L3CODE(XK_k, XK_period    , XK_less       , ShiftMask)
 
     XUngrabKeyboard(display, CurrentTime);
     fprintf(stderr, "LEVEL3: XUngrabKeyboard\n");
