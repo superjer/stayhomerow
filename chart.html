@@ -2,17 +2,23 @@
 <head>
 <meta http-equiv=content-type content='text/html;charset=UTF-8'>
 <style>
+html {
+background:black;
+}
 body {
 font-size:34px;
 font-weight:bold;
 }
-.x {
-width:1230px;
-height:260px;
+.x, .y {
+width:1430px;
+height:250px;
 margin:0 auto;
 clear:left;
 }
-.x div {
+.y {
+height:405px;
+}
+.x div, .y div {
 border:10px solid black;
 text-align:center;
 border-radius:10px;
@@ -21,39 +27,52 @@ background-color:#EEE;
 float:left;
 width:100px;
 }
-.x div.deeper {
+div.deeper {
 border-color:#C00 #800 #600 #A00;
 background-color:#E00;
 }
-.x div.deeper span {
+div.deeper span {
 color:white;
 }
-.x div.sticky {
+div.sticky {
 border-color:#EE0 #CC0 #BB0 #DD0;
 background-color:#FF0;
 }
-.x div.ingles {
-border-color:#EEE #DDD #CCC #DDD;
-background-color:#FFF;
+div.ingles {
+opacity:0.3;
 }
-.x div.ingles span {
-color:#CCC;
+div.ingles span {
+color:#888;
 }
-.x div.diving {
+div.diving {
 border-color:#0C0 #080 #060 #0A0;
 background-color:#0E0;
 }
-.x div:nth-child(11) {
+.y div:first-child {
+margin-left:780px;
+}
+.y div:nth-child(4) {
+clear:left;
+}
+.x div:nth-child(11), .y div:nth-child(14) {
 clear:left;
 margin-left:30px;
 }
-.x div:nth-child(21) {
+.x div:nth-child(21), .y div:nth-child(24) {
 border-color:transparent;
 background-color:transparent;
 text-align:left;
 color:red;
 width:70px;
 clear:left;
+}
+.y div:nth-child(35) {
+clear:left;
+margin-left:270px;
+width:730px;
+}
+.y div:nth-child(36), .y div:nth-child(37) {
+width:130px;
 }
 span {
 font-size:12px;
@@ -78,13 +97,13 @@ color:red;
  <div class=ingles><span>S</span> </div>
  <div class=normal><span>D</span>Bksp</div>
  <div class=normal><span>F</span>Esc</div>
- <div class=normal><span>G</span>Rpt</div>
+ <div class=ingles><span>G</span> </div>
  <div class=normal><span>H</span>Hom</div>
  <div class=normal><span>J</span>j</div>
  <div class=deeper><span>K</span>Key</div>
  <div class=normal><span>L</span>End</div>
  <div class=ingles><span>;</span> </div>
- <div style='color:black;'>J</div>
+ <div style='color:white;'>J</div>
  <div class=normal><span>Z</span>Pgdn</div>
  <div class=normal><span>X</span>Del</div>
  <div class=normal><span>C</span>Ctrl</div>
@@ -94,38 +113,6 @@ color:red;
  <div class=deeper><span>M</span>Mov</div>
  <div class=ingles><span>,</span> </div>
  <div class=ingles><span>.</span> </div>
-</div>
-<div class=x>
- <div class=normal><span>Q</span>Quit</div>
- <div class=ingles><span>W</span> </div>
- <div class=ingles><span>E</span> </div>
- <div class=ingles><span>R</span> </div>
- <div class=ingles><span>T</span> </div>
- <div class=ingles><span>Y</span> </div>
- <div class=sticky><span>U</span>7</div>
- <div class=sticky><span>I</span>8</div>
- <div class=sticky><span>O</span>9</div>
- <div class=sticky><span>P</span>+</div>
- <div class=ingles><span>A</span> </div>
- <div class=ingles><span>S</span> </div>
- <div class=sticky><span>D</span>Bksp</div>
- <div class=diving><span>F</span>Fn</div>
- <div class=ingles><span>G</span> </div>
- <div class=ingles><span>H</span> </div>
- <div class=sticky><span>J</span>4</div>
- <div class=sticky><span>K</span>5</div>
- <div class=sticky><span>L</span>6</div>
- <div class=sticky><span>;</span>+</div>
- <div class=normal>N</div>
- <div class=ingles><span>Z</span> </div>
- <div class=ingles><span>X</span> </div>
- <div class=ingles><span>C</span> </div>
- <div class=ingles><span>V</span> </div>
- <div class=ingles><span>B</span> </div>
- <div class=ingles><span>N</span> </div>
- <div class=sticky><span>M</span>1</div>
- <div class=sticky><span>,</span>2</div>
- <div class=sticky><span>.</span>3</div>
 </div>
 <div class=x>
  <div class=normal><span>Quote</span>"</div>
@@ -190,6 +177,45 @@ color:red;
  <div class=ingles><span>Z</span> </div>
  <div class=ingles><span>,</span> </div>
  <div class=ingles><span>.</span> </div>
+</div>
+<div class=y>
+ <div class=sticky><span>8</span>/</div>
+ <div class=sticky><span>9</span>*</div>
+ <div class=sticky><span>O</span>-</div>
+ <div class=normal><span>Q</span>Quit</div>
+ <div class=ingles><span>W</span> </div>
+ <div class=ingles><span>E</span> </div>
+ <div class=ingles><span>R</span> </div>
+ <div class=ingles><span>T</span> </div>
+ <div class=ingles><span>Y</span> </div>
+ <div class=sticky><span>U</span>7</div>
+ <div class=sticky><span>I</span>8</div>
+ <div class=sticky><span>O</span>9</div>
+ <div class=sticky><span>P</span>+</div>
+ <div class=ingles><span>A</span> </div>
+ <div class=ingles><span>S</span> </div>
+ <div class=sticky><span>D</span>Bksp</div>
+ <div class=diving><span>F</span>Fn</div>
+ <div class=ingles><span>G</span> </div>
+ <div class=ingles><span>H</span> </div>
+ <div class=sticky><span>J</span>4</div>
+ <div class=sticky><span>K</span>5</div>
+ <div class=sticky><span>L</span>6</div>
+ <div class=sticky><span>;</span>+</div>
+ <div class=normal>N</div>
+ <div class=ingles><span>Z</span> </div>
+ <div class=ingles><span>X</span> </div>
+ <div class=ingles><span>C</span> </div>
+ <div class=ingles><span>V</span> </div>
+ <div class=ingles><span>B</span> </div>
+ <div class=ingles><span>N</span> </div>
+ <div class=sticky><span>M</span>1</div>
+ <div class=sticky><span>,</span>2</div>
+ <div class=sticky><span>.</span>3</div>
+ <div class=sticky><span>/</span>Rtrn</div>
+ <div class=sticky><span> </span>0</div>
+ <div class=sticky><span>Alt</span>.</div>
+ <div class=sticky><span>Super</span>Rtrn</div>
 </div>
 </body>
 </html>
