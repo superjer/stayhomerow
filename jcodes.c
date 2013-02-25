@@ -17,6 +17,8 @@ struct item {
 
 KeySym level1[] = { XK_j, };
 KeySym level2[] = { XK_k, XK_n, XK_m, };
+KeySym levelm[] = { XK_w, XK_a, XK_s, XK_d, XK_h, XK_k, XK_l, XK_q, };
+KeySym leveln[] = { XK_8, XK_9, XK_0, XK_u, XK_i, XK_o, XK_p, XK_k, XK_l, XK_semicolon, XK_m, XK_comma, XK_period, XK_slash, XK_space, XK_Alt_R, XK_Super_R, XK_d, XK_q };
 
 Display *display;
 Window window;
@@ -24,6 +26,7 @@ XEvent event;
 struct item queue[QUEUE_MAX] = {{0}};
 int qlen = 0;
 int level = 1;
+int quit = 0;
 KeySym seq[3] = {0};
 
 // We receive X errors if we grab keys that are already grabbed.  This is not
@@ -109,7 +112,7 @@ void enqueue(XEvent event)
   #define REMOVE(keysym) do {                          \
     KeyCode kc = XKeysymToKeycode(display,(keysym));   \
     int phase = 1;                                     \
-    for( i=0; i<qlen-1; i++ ) {                        \
+    for( i=0; i<qlen; i++ ) {                          \
       struct item *it = queue + i;                     \
       if( it->sym!=keysym )                            \
         continue;                                      \
@@ -164,8 +167,39 @@ void enqueue(XEvent event)
         level = 1;                                                               \
       }
 
-    if      L2CODE(XK_j, XK_j         )
-    //                q: quit
+    if( it->sym==XK_q ) {
+      REMOVE(sym1);
+      REMOVE(it->sym);
+      XUngrabKeyboard(display, CurrentTime);
+      fprintf(stderr, "LEVEL2: QUIT!\n");
+      level = 1;
+      quit = 1;
+    }
+    else if( it->sym==XK_m ) {
+      REMOVE(sym1);
+      REMOVE(it->sym);
+      it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
+      XUngrabKeyboard(display, CurrentTime);
+      for( i=0; i<COUNT(levelm); i++ )
+        grab(levelm[i]);
+      fprintf(stderr, "LEVEL2: MOVE!\n");
+      level = 'm';
+    }
+    else if( it->sym==XK_n ) {
+      REMOVE(sym1);
+      REMOVE(it->sym);
+      it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
+      XUngrabKeyboard(display, CurrentTime);
+      for( i=0; i<COUNT(leveln); i++ )
+        grab(leveln[i]);
+      fprintf(stderr, "LEVEL2: NUMPAD!\n");
+      level = 'n';
+    }
+    else if( it->sym==XK_k ) {
+      sym2 = it->sym;
+      level = 3;
+    }
+    else if L2CODE(XK_j, XK_j         )
     else if L2CODE(XK_w, XK_Page_Up   )
     else if L2CODE(XK_d, XK_BackSpace )
     else if L2CODE(XK_f, XK_Escape    )
@@ -176,17 +210,13 @@ void enqueue(XEvent event)
     else if L2CODE(XK_x, XK_Delete    )
     //                c: control
     //                v: shift
-    else if( IN(it->sym, level2) ) {
-      sym2 = it->sym;
-      level = 3;
-    }
     else {
       XUngrabKeyboard(display, CurrentTime);
       fprintf(stderr, "LEVEL2: XUngrabKeyboard\n");
       level = 1;
     }
   }
-  else {
+  else if( level==3 ) {
     #define L3CODE(from2,from3,to,mask)   \
       ( sym2==from2 && it->sym==from3 ) { \
         KEYSWAP(to,mask);                 \
@@ -194,31 +224,8 @@ void enqueue(XEvent event)
         REMOVE(sym2);                     \
       }
 
-    // JM -- movement
-    if      L3CODE(XK_m, XK_h         , XK_Left       , 0)
-    else if L3CODE(XK_m, XK_j         , XK_Down       , 0)
-    else if L3CODE(XK_m, XK_k         , XK_Up         , 0)
-    else if L3CODE(XK_m, XK_l         , XK_Right      , 0)
-    // JN -- numpad
-    else if L3CODE(XK_n, XK_8         , XK_KP_Divide  , 0)
-    else if L3CODE(XK_n, XK_9         , XK_KP_Multiply, 0)
-    else if L3CODE(XK_n, XK_0         , XK_KP_Subtract, 0)
-    else if L3CODE(XK_n, XK_u         , XK_KP_7       , 0)
-    else if L3CODE(XK_n, XK_i         , XK_KP_8       , 0)
-    else if L3CODE(XK_n, XK_o         , XK_KP_9       , 0)
-    else if L3CODE(XK_n, XK_p         , XK_KP_Add     , 0)
-    else if L3CODE(XK_n, XK_j         , XK_KP_4       , 0)
-    else if L3CODE(XK_n, XK_k         , XK_KP_5       , 0)
-    else if L3CODE(XK_n, XK_l         , XK_KP_6       , 0)
-    else if L3CODE(XK_n, XK_semicolon , XK_KP_Add     , 0)
-    else if L3CODE(XK_n, XK_m         , XK_KP_1       , 0)
-    else if L3CODE(XK_n, XK_comma     , XK_KP_2       , 0)
-    else if L3CODE(XK_n, XK_period    , XK_KP_3       , 0)
-    else if L3CODE(XK_n, XK_slash     , XK_KP_Enter   , 0)
-    else if L3CODE(XK_n, XK_space     , XK_KP_0       , 0)
-    else if L3CODE(XK_n, XK_Alt_R     , XK_KP_Decimal , 0)
-    else if L3CODE(XK_n, XK_Super_R   , XK_KP_Enter   , 0)
     // JK -- Symbol and punctuation keys
+    if(0) ;
     else if L3CODE(XK_k, XK_q         , XK_quotedbl   , ShiftMask)
     else if L3CODE(XK_k, XK_w         , XK_backslash  ,         0)
     else if L3CODE(XK_k, XK_e         , XK_equal      ,         0)
@@ -230,7 +237,7 @@ void enqueue(XEvent event)
     else if L3CODE(XK_k, XK_a         , XK_at         , ShiftMask)
     else if L3CODE(XK_k, XK_s         , XK_asterisk   , ShiftMask)
     else if L3CODE(XK_k, XK_d         , XK_dollar     , ShiftMask)
-    else if L3CODE(XK_k, XK_f         , XK_greater    , ShiftMask)
+    else if L3CODE(XK_k, XK_f         , XK_Return     , ShiftMask)
     else if L3CODE(XK_k, XK_g         , XK_grave      ,         0)
     else if L3CODE(XK_k, XK_h         , XK_numbersign , ShiftMask)
     else if L3CODE(XK_k, XK_j         , XK_braceleft  , ShiftMask)
@@ -248,6 +255,57 @@ void enqueue(XEvent event)
     XUngrabKeyboard(display, CurrentTime);
     fprintf(stderr, "LEVEL3: XUngrabKeyboard\n");
     level = 1;
+  }
+  else if( level=='m' )
+  {
+    if( it->sym==XK_q ) {
+      REMOVE(it->sym);
+      for( i=0; i<COUNT(levelm); i++ )
+        ungrab(levelm[i]);
+      fprintf(stderr, "LEVELM: XUngrab H,K,L,Q\n");
+      level = 1;
+    }
+    else if( it->sym==XK_w ) KEYSWAP(XK_Up   ,0);
+    else if( it->sym==XK_a ) KEYSWAP(XK_Left ,0);
+    else if( it->sym==XK_s ) KEYSWAP(XK_Down ,0);
+    else if( it->sym==XK_d ) KEYSWAP(XK_Right,0);
+    else if( it->sym==XK_h ) KEYSWAP(XK_Left ,0);
+    else if( it->sym==XK_j ) KEYSWAP(XK_Down ,0);
+    else if( it->sym==XK_k ) KEYSWAP(XK_Up   ,0);
+    else if( it->sym==XK_l ) KEYSWAP(XK_Right,0);
+  }
+  else if( level=='n' )
+  {
+    if( it->sym==XK_q ) {
+      REMOVE(it->sym);
+      for( i=0; i<COUNT(leveln); i++ )
+        ungrab(leveln[i]);
+      fprintf(stderr, "LEVELN: XUngrab Numpad keys\n");
+      level = 1;
+    }
+    else if( it->sym==XK_8         ) KEYSWAP(XK_KP_Divide  ,0);
+    else if( it->sym==XK_9         ) KEYSWAP(XK_KP_Multiply,0);
+    else if( it->sym==XK_0         ) KEYSWAP(XK_KP_Subtract,0);
+    else if( it->sym==XK_u         ) KEYSWAP(XK_KP_7       ,ShiftMask);
+    else if( it->sym==XK_i         ) KEYSWAP(XK_KP_8       ,ShiftMask);
+    else if( it->sym==XK_o         ) KEYSWAP(XK_KP_9       ,ShiftMask);
+    else if( it->sym==XK_p         ) KEYSWAP(XK_KP_Add     ,0);
+    else if( it->sym==XK_j         ) KEYSWAP(XK_KP_4       ,ShiftMask);
+    else if( it->sym==XK_k         ) KEYSWAP(XK_KP_5       ,ShiftMask);
+    else if( it->sym==XK_l         ) KEYSWAP(XK_KP_6       ,ShiftMask);
+    else if( it->sym==XK_semicolon ) KEYSWAP(XK_KP_Add     ,0);
+    else if( it->sym==XK_m         ) KEYSWAP(XK_KP_1       ,ShiftMask);
+    else if( it->sym==XK_comma     ) KEYSWAP(XK_KP_2       ,ShiftMask);
+    else if( it->sym==XK_period    ) KEYSWAP(XK_KP_3       ,ShiftMask);
+    else if( it->sym==XK_slash     ) KEYSWAP(XK_KP_Enter   ,0);
+    else if( it->sym==XK_space     ) KEYSWAP(XK_KP_0       ,ShiftMask);
+    else if( it->sym==XK_Alt_R     ) KEYSWAP(XK_KP_Decimal ,0);
+    else if( it->sym==XK_Super_R   ) KEYSWAP(XK_KP_Enter   ,0);
+    else if( it->sym==XK_d         ) KEYSWAP(XK_BackSpace  ,0);
+  }
+  else {
+    fprintf(stderr, "BAD LEVEL! QUITTING!\n");
+    exit(-1);
   }
 }
 
@@ -322,6 +380,7 @@ int main(int argc, char* argv[])
         break;
 
       case FocusOut:
+        if( quit ) exit(0);
         dequeue();
         break;
 
