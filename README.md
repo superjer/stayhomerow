@@ -106,32 +106,43 @@ in this mode.
      │ J │ K │ L │ ; │   ━jn━▶   │ 4 │ 5 │ 6 │ + │
      └─┬─┴─┬─┴─┬─┴─┬─┴─┐         └─┬─┴─┬─┴─┬─┴─┬─┴─┐
        │ M │ , │ . │ / │           │ 1 │ 2 │ 3 │ Enter
-    ───┴───┴──┬┴───┼───┴┐       ───┴───┴──┬┴───┼───┴┐
+    ┈──┴───┴──┬┴───┼───┴┐       ┈──┴───┴──┬┴───┼───┴┐
               │ Alt│ Win│               0 │  . │ Enter
-    ──────────┴────┴────┘       ──────────┴────┴────┘
+    ┈─────────┴────┴────┘       ┈─────────┴────┴────┘
 
 All keys other than Q, D, and the 18 keys in the diagram work normally.
 
 
+Control and shift  [ jc ]  [ jv ]
+---------------------------------
+
+Typing  jc  causes the next key to be sent as though the Ctrl key is held down.
+
+Typing  jv  causes the next key to be sent as though the Shift key is held down.
+
+These can be used together. They can be used with a regular old single key press, or with another
+stayhomerow sequence.
+
+    Seq      Result
+    ---      ------
+    jca      Ctrl-A
+    jc<End>  Ctrl-End
+    jcjl     Ctrl-End
+    jcjkp    Ctrl-+
+    jcjkd    Ctrl-$   (It's control-capital-four! Why? Because we can.)
+    jva      A
+    jv<End>  Shift-End
+    jcjvjl   Ctrl-Shift-End
+
+Note: Ctrl and Shift stay held down during Movement mode (useful) and Numpad mode (not so useful).
+
 Not implemented yet
 -------------------
 
-  1. Implement  jc  for single-use Control key. For example:
-
-         Seq      Result
-         ---      ------
-         jca      Ctrl-A
-         jc<End>  Ctrl-End
-         jcjl     Ctrl-End
-         jcjkp    Ctrl-+
-         jcjkd    Ctrl-$    (although why, I don't know!)
-
-  2. Implement  jv  like  jc  but using Shift instead of Control.
-
-  3. Make the existing sequences work while holding Shift and/or Control, and apply the modifiers
+  1. Make the existing sequences work while holding Shift and/or Control, and apply the modifiers
      to the resulting key.
 
-  4. Implement  jg  for pressing Function keys. Use the same positions as in Numpad mode for
+  2. Implement  jg  for pressing Function keys. Use the same positions as in Numpad mode for
      F1-F9. For F10, F11, and F12 use 8, 9, and 0 respectively. Unless somebody can think of a
      better idea.
 
