@@ -136,23 +136,28 @@ stayhomerow sequence.
 
 Note: Ctrl and Shift stay held down during Movement mode (useful) and Numpad mode (not so useful).
 
+
+Function keys  [ jg ]
+---------------------
+
+The sequences for the function keys, F1-F12, all start with  jg. The layout is similar to Numpad
+mode, except 1-9 are F1-F9.
+
+F10, F11, and F12 can be typed by pressing  jg7,  jg8,  and  jg9.
+
+    ┌───┬───┬───┐             ┌───┬───┬───┐
+    │ 7 │ 8 │ 9 │             │F10│F11│F12│
+    └─┬─┴─┬─┴─┬─┴─┐           └─┬─┴─┬─┴─┬─┴─┐
+      │ U │ I │ O │             │ F7│ F8│ F9│
+      └┬──┴┬──┴┬──┴┐            └┬──┴┬──┴┬──┴┐
+       │ J │ K │ L │    ━jg━▶    │ F4│ F5│ F6│
+       └─┬─┴─┬─┴─┬─┴─┐           └─┬─┴─┬─┴─┬─┴─┐
+         │ M │ , │ . │             │ F1│ F2│ F3│
+         └───┴───┴───┘             └───┴───┴───┘
+
+
 Not implemented yet
 -------------------
 
   1. Make the existing sequences work while holding Shift and/or Control, and apply the modifiers
      to the resulting key.
-
-  2. Implement  jg  for pressing Function keys. Use the same positions as in Numpad mode for
-     F1-F9. For F10, F11, and F12 use 8, 9, and 0 respectively. Unless somebody can think of a
-     better idea.
-
-         Seq      Result
-         ---      ------
-         jgm      F1
-         jg,      F2
-         jg.      F3
-              ...
-         jgo      F9
-         jg7      F10
-         jg8      F11
-         jg9      F12

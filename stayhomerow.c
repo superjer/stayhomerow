@@ -158,19 +158,16 @@ void enqueue(XEvent event)
   } while(0)
 
   if( event.type==KeyRelease ) {
-    if( release_find==it->ev.xkey.keycode )
-    {
+    if( release_find==it->ev.xkey.keycode ) {
       it->ev.xkey.keycode = release_replace;
       release_find = 0;
       release_replace = 0;
     }
-    if( release_kill1==it->ev.xkey.keycode )
-    {
+    if( release_kill1==it->ev.xkey.keycode ) {
       it->exists = 0;
       release_kill1 = 0;
     }
-    if( release_kill2==it->ev.xkey.keycode )
-    {
+    if( release_kill2==it->ev.xkey.keycode ) {
       it->exists = 0;
       release_kill2 = 0;
     }
@@ -240,6 +237,10 @@ void enqueue(XEvent event)
       sym2 = it->sym;
       level = 'k';
     }
+    else if( it->sym==XK_g ) {
+      sym2 = it->sym;
+      level = 'g';
+    }
     else if LJCODE(XK_j, XK_j         )
     else if LJCODE(XK_w, XK_Page_Up   )
     else if LJCODE(XK_d, XK_BackSpace )
@@ -258,7 +259,7 @@ void enqueue(XEvent event)
       mask = 0;
     }
   }
-  else if( level=='k' ) {
+  else if( level=='k' || level=='g' ) {
     #define LKCODE(from2,from3,to,mask)   \
       ( sym2==from2 && it->sym==from3 ) { \
         KEYSWAP(to,mask);                 \
@@ -293,14 +294,25 @@ void enqueue(XEvent event)
     else if LKCODE(XK_k, XK_m         , XK_minus      , mask          )
     else if LKCODE(XK_k, XK_comma     , XK_greater    , mask|ShiftMask)
     else if LKCODE(XK_k, XK_period    , XK_less       , mask|ShiftMask)
+    else if LKCODE(XK_g, XK_m         , XK_F1         , mask          )
+    else if LKCODE(XK_g, XK_comma     , XK_F2         , mask          )
+    else if LKCODE(XK_g, XK_period    , XK_F3         , mask          )
+    else if LKCODE(XK_g, XK_j         , XK_F4         , mask          )
+    else if LKCODE(XK_g, XK_k         , XK_F5         , mask          )
+    else if LKCODE(XK_g, XK_l         , XK_F6         , mask          )
+    else if LKCODE(XK_g, XK_u         , XK_F7         , mask          )
+    else if LKCODE(XK_g, XK_i         , XK_F8         , mask          )
+    else if LKCODE(XK_g, XK_o         , XK_F9         , mask          )
+    else if LKCODE(XK_g, XK_7         , XK_F10        , mask          )
+    else if LKCODE(XK_g, XK_8         , XK_F11        , mask          )
+    else if LKCODE(XK_g, XK_9         , XK_F12        , mask          )
 
     XUngrabKeyboard(display, CurrentTime);
     fprintf(stderr, "LEVELK: XUngrabKeyboard\n");
     level = 1;
     mask = 0;
   }
-  else if( level=='m' )
-  {
+  else if( level=='m' ) {
     if( it->sym==XK_q ) {
       REMOVE(it->sym);
       for( i=0; i<COUNT(movkeys); i++ )
@@ -318,8 +330,7 @@ void enqueue(XEvent event)
     else if( it->sym==XK_k ) KEYSWAP(XK_Up   ,mask);
     else if( it->sym==XK_l ) KEYSWAP(XK_Right,mask);
   }
-  else if( level=='n' )
-  {
+  else if( level=='n' ) {
     if( it->sym==XK_q ) {
       REMOVE(it->sym);
       for( i=0; i<COUNT(numkeys); i++ )
@@ -413,8 +424,7 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Succesfully registered for FocusChange events on root window.\n");
   else if( error == BadRequest )
     fprintf(stderr, "Got BadRequest when registering for FocusChange events on root window. Ignoring.\n");
-  else
-  {
+  else {
     fprintf(stderr, "Couldn't register for FocusChange events on root window. Error: %d\n",error);
     exit(EXIT_FAILURE);
   }
