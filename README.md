@@ -1,11 +1,11 @@
 stayhomerow
 ===========
 
-Key sequence mappings for X11 that allow you to type anything without leaving the home row position.
+Key sequence mappings for X11 that allow you to type difficult keys without leaving the home row.
 
 
 About
-=====
+-----
 
 All the sequences in stayhomerow begin with the letter  j,  taking advantage of two things:
 
@@ -22,53 +22,92 @@ holding down a key and letting it repeat works, but you won't see anything until
 
 Some applications (e.g. Firefox) will not accept synthetic keypresses when they are out of focus,
 so to be safe, stayhomerow only sends keypress events to the target application after the target
-application regains focus.
+application regains focus. This should happen immediately when you press the final key in the
+sequence.
 
 
-Sequence examples
-=================
+Main sequences  [ j ]
+---------------------
 
-  Typing  jl  counts as pressing the  Home  key
-          jh                          End
-          jf                          Esc
-          jd                          Backspace
-          jx                          Delete
-          jw                          Page Up
-          jz                          Page Down
-  Typing  jq  causes stayhomerow to quit.
+One of the most useful sequences is  jl  (JL),  which simulates pressing the End key. The End key,
+while freuquently useful, is quite a reach from the QWERTY home row.
+
+    Seq    Result         Justification
+    ---    ------         -------------
+    jh     Home           H is for Home, and typing j then h is a leftward movement
+    jl     End            L is at the End of the letters, and typing it is a rightward movement
+    jf     Esc            F is shaped a bit like E? It's also extremely easy to type
+    jd     Backspace      D is for delete, which is what Backspace does
+    jx     Delete         Because backspace is more important and D is easier to type
+    jw     Page Up        W is up from homerow
+    jz     Page Down      Z is down from homerow and directly below W
+    jj     j              Sometimes you just need one j
+
+Note: Typing  jq  causes stayhomerow to quit.
+
+Note: Type  jj  to simulate a single j, in case you need to literally type  jx,  or similar.
 
 
-Symbols and punctuation examples
-================================
+Symbols and punctuation  [ jk ]
+-------------------------------
 
-Symbols and punctuation sequences all start with  jk.  Some characters are harder than others
-to type on QWERTY already, so this is taken into account.  For example, no sequences contain
-the  y  or  b  keys. And semicolon has no sequence since it can already be typed easily.
+Symbols and punctuation sequences all start with  jk. This is mostly because  jk  is very easy to
+type. Some characters are harder than others to type on QWERTY already, so this is taken into
+account. For example, no sequences contain the  y  or  b  keys. And semicolon has no sequence since
+it can already be typed easily.
 
-  Typing  jkd  (think Dollar) will type a  $
-          jkp         Plus                 +
-          jke         Equal                =
-          jkl         Lowline              _
-          jkg         Grave                `
-          jkv         Vertical             |
-          jki         In                   (
-          jko         Out                  )
-          jkj                              {
-          jkk                              }
+    Seq    Result         Mnemomic
+    ---    ------         --------
+    jkd    $              Dollar
+    jkp    +              Plus
+    jkm    -              Minus
+    jke    =              Equal
+    jkl    _              Low line (makes_typing_snake_case_easy_and_fun)
+    jkg    `              Grave
+    jkv    |              Vertical bar
+    jks    *              Star
+    jkr    ^              Roof
+    jkn    &              aNd
+    jki    (              In
+    jko    )              Out
+    jkj    {              (none, but it's on the left of JK)
+    jkk    }              (none, but it's on the right)
 
 For the full list, see chart.html.
 
 
-Movement mode
-=============
+Movement mode  [ jm ]
+---------------------
 
 Typing  jm  causes stayhomerow to enter movement mode. Until you press  q,  you can use the
 HJKL or WASD keys as arrow keys.
 
+    ┌───┬───┐            ┌───┬───┐
+    │ Q │ W │            Quit│ ↑ │
+    └─┬─┴─┬─┴─┬───┐      └─┬─┴─┬─┴─┬───┐    ┌───┬───┬───┬───┐       ┌───┬───┬───┬───┐
+      │ A │ S │ D │ ━jm━▶  │ ← │ ↓ │ → │    │ H │ J │ K │ L │ ━jm━▶ │ ← │ ↓ │ ↑ │ → │
+      └───┴───┴───┘        └───┴───┴───┘    └───┴───┴───┴───┘       └───┴───┴───┴───┘
 
-Numpad mode
-===========
+All keys other than these nine work normally.
+
+
+Numpad mode  [ jn ]
+-------------------
 
 Typing  jn  causes stayhomerow to enter numpad mode. Until you press  q,  the right hand
-position mimicks the numeric keypad, where j=4, k=5, and l=6.  You can also press  d  for
-Backspace in this mode.
+position mimicks the numeric keypad, as shown below.  You can also press  d  for Backspace
+in this mode.
+
+      ┌───┬───┬───┐               ┌───┬───┬───┐
+      │ 8 │ 9 │ 0 │               │ / │ * │ - │
+    ┌─┴─┬─┴─┬─┴─┬─┴─┐           ┌─┴─┬─┴─┬─┴─┬─┴─┐
+    │ U │ I │ O │ P │           │ 7 │ 8 │ 9 │ + │
+    └┬──┴┬──┴┬──┴┬──┴┐          └┬──┴┬──┴┬──┴┬──┴┐
+     │ J │ K │ L │ ; │   ━jn━▶   │ 4 │ 5 │ 6 │ + │
+     └─┬─┴─┬─┴─┬─┴─┬─┴─┐         └─┬─┴─┬─┴─┬─┴─┬─┴─┐
+       │ M │ , │ . │ / │           │ 1 │ 2 │ 3 │ Enter
+    ───┴───┴──┬┴───┼───┴┐       ───┴───┴──┬┴───┼───┴┐
+              │ Alt│ Win│               0 │  . │ Enter
+    ──────────┴────┴────┘       ──────────┴────┴────┘
+
+All keys other than Q, D, and the 18 keys in the diagram work normally.
