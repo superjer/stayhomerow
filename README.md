@@ -111,3 +111,35 @@ in this mode.
     ──────────┴────┴────┘       ──────────┴────┴────┘
 
 All keys other than Q, D, and the 18 keys in the diagram work normally.
+
+
+Not implemented yet
+-------------------
+
+  1. Implement  jc  for single-use Control key. For example:
+
+         Seq      Result
+         ---      ------
+         jca      Ctrl-A
+         jc<End>  Ctrl-End
+         jcjl     Ctrl-End
+         jcjkp    Ctrl-+
+         jcjkd    Ctrl-$    (although why, I don't know!)
+
+  2. Implement  jv  like  jc  but using Shift instead of Control.
+
+  3. Make the existing sequences work while holding Shift and/or Control, and apply the modifiers
+     to the resulting key.
+
+  4. Implement  jg  for pressing Function keys. Use the same positions as in Numpad mode for
+     F1-F9. For F10, F11, and F12 use 8, 9, and 0 respectively. Unless somebody can think of a
+     better idea.
+
+         Seq      Result
+         ---      ------
+         jgm      F1
+         jg,      F2
+         jgp      F9
+         jg8      F10
+         jg9      F11
+         jg0      F12
