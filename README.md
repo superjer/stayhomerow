@@ -139,7 +139,9 @@ Not implemented yet
          ---      ------
          jgm      F1
          jg,      F2
-         jgp      F9
-         jg8      F10
-         jg9      F11
-         jg0      F12
+         jg.      F3
+              ...
+         jgo      F9
+         jg7      F10
+         jg8      F11
+         jg9      F12
