@@ -1,3 +1,21 @@
+// stayhomerow
+//
+// Key sequences for X11 that allow you to type difficult keys without leaving
+// the home row.
+//
+// Copyright 2013 Jer Wilson
+// https://github.com/superjer/stayhomerow
+// Author: Jer Wilson <superjer@superjer.com>
+//
+// This program is distributed under the terms of the GNU General Public
+// License. See LICENSE for details.
+//
+// Based very loosely on "Dvorak-Qwerty" by Kenton Varda
+// http://dvorak-qwerty.googlecode.com
+//
+// This program may not have been possible if I hadn't been able to learn how
+// to do this sort of thing from the source code of "Dvorak-Qwerty". There is,
+// after all, only so much unguided X11 programming a man can take.
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -29,8 +47,7 @@ int level = 1;
 int quit = 0;
 KeySym seq[3] = {0};
 
-// We receive X errors if we grab keys that are already grabbed.  This is not
-// really fatal so we catch them.
+// We receive X errors if we grab keys that are already grabbed.
 int (*original_error_handler)(Display* display, XErrorEvent* error);
 
 #define IN(needle,haystack) find_in((needle),(haystack),COUNT(haystack))

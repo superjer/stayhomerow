@@ -1,7 +1,7 @@
 stayhomerow
 ===========
 
-Key sequence mappings for X11 that allow you to type difficult keys without leaving the home row.
+Key sequences for X11 that allow you to type difficult keys without leaving the home row.
 
 
 About
