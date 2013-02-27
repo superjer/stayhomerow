@@ -258,6 +258,8 @@ void enqueue(XEvent event)
     else if LJCODE(XK_l, XK_End       )
     else if LJCODE(XK_z, XK_Page_Down )
     else if LJCODE(XK_x, XK_Delete    )
+    else if LJCODE(XK_p, XK_b         )
+    else if LJCODE(XK_s, XK_y         )
     //                c: control
     //                v: shift
     else {
@@ -311,9 +313,9 @@ void enqueue(XEvent event)
     else if LKCODE(XK_g, XK_u         , XK_F7         , mask          )
     else if LKCODE(XK_g, XK_i         , XK_F8         , mask          )
     else if LKCODE(XK_g, XK_o         , XK_F9         , mask          )
-    else if LKCODE(XK_g, XK_7         , XK_F10        , mask          )
-    else if LKCODE(XK_g, XK_8         , XK_F11        , mask          )
-    else if LKCODE(XK_g, XK_9         , XK_F12        , mask          )
+    else if LKCODE(XK_g, XK_p         , XK_F10        , mask          )
+    else if LKCODE(XK_g, XK_bracketleft , XK_F11      , mask          )
+    else if LKCODE(XK_g, XK_bracketright, XK_F12      , mask          )
 
     XUngrabKeyboard(display, CurrentTime);
     fprintf(stderr, "LEVELK: XUngrabKeyboard\n");

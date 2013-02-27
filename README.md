@@ -144,17 +144,15 @@ Function keys  [ jg ]
 The sequences for the function keys, F1-F12, all start with  jg. The layout is similar to Numpad
 mode, except 1-9 are F1-F9.
 
-F10, F11, and F12 can be typed by pressing  jg7,  jg8,  and  jg9.
+F10, F11, and F12 can be typed by pressing  jgp,  jg[,  and  jg].
 
-    ┌───┬───┬───┐             ┌───┬───┬───┐
-    │ 7 │ 8 │ 9 │             │F10│F11│F12│
-    └─┬─┴─┬─┴─┬─┴─┐           └─┬─┴─┬─┴─┬─┴─┐
-      │ U │ I │ O │             │ F7│ F8│ F9│
-      └┬──┴┬──┴┬──┴┐            └┬──┴┬──┴┬──┴┐
-       │ J │ K │ L │    ━jg━▶    │ F4│ F5│ F6│
-       └─┬─┴─┬─┴─┬─┴─┐           └─┬─┴─┬─┴─┬─┴─┐
-         │ M │ , │ . │             │ F1│ F2│ F3│
-         └───┴───┴───┘             └───┴───┴───┘
+      ┌───┬───┬───┬───┬───┬───┐       ┌───┬───┬───┬───┬───┬───┐
+      │ U │ I │ O │ P │ [ │ ] │       │F7 │F8 │F9 │F10│F11│F12│
+      └┬──┴┬──┴┬──┴┬──┴───┴───┘       └┬──┴┬──┴┬──┴┬──┴───┴───┘
+       │ J │ K │ L │            ━jg━▶  │F4 │F5 │F6 │
+       └─┬─┴─┬─┴─┬─┴─┐                 └─┬─┴─┬─┴─┬─┴─┐
+         │ M │ , │ . │                   │F1 │F2 │F3 │
+         └───┴───┴───┘                   └───┴───┴───┘
 
 
 Not implemented yet
