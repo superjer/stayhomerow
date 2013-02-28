@@ -3,6 +3,7 @@ stayhomerow
 
 Key sequences for X11 that allow you to type difficult keys without leaving the home row.
 
+![stayhomerow chart](http://www.superjer.com/lies/stayhomerow-920.png)
 
 About
 -----
