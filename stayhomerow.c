@@ -26,6 +26,7 @@
 
 #define QUEUE_MAX 1000
 #define COUNT(x) (sizeof (x) / sizeof *(x))
+#define QUIT_ON_JQ 0
 
 struct item {
   int exists;
@@ -33,26 +34,26 @@ struct item {
   KeySym sym;
 };
 
-KeySym movkeys[] = { XK_q,
+KeySym movkeys[] = { XK_x, XK_q,
                      XK_w, XK_a, XK_s, XK_d,
                      XK_h, /*j*/ XK_k, XK_l, };
 
 KeySym numkeys[] = { XK_d,     XK_q,
                                XK_8,     XK_9,      XK_0,
                      XK_u,     XK_i,     XK_o,      XK_p,
-                     /*j*/     XK_k,     XK_l,      XK_semicolon,
+                     /*j*/     XK_k,     XK_l,      /*semicolon*/
                      XK_m,     XK_comma, XK_period, XK_slash,
                      XK_space, XK_Alt_R, XK_Super_R,              };
 
 Display *display;
 Window window;
-XEvent event;
 struct item queue[QUEUE_MAX] = {{0}};
 int qlen = 0;
 int level = 1;
 int quit = 0;
 int mask = 0;
 KeySym seq[3] = {0};
+XEvent last_press_event = {0};
 
 // We receive X errors if we grab keys that are already grabbed.
 int (*original_error_handler)(Display* display, XErrorEvent* error);
@@ -172,11 +173,18 @@ void enqueue(XEvent event)
       release_kill2 = 0;
     }
   }
-  else if( level==1 ) {
+  else if( level==1 && it->sym==XK_j ) {
     int status = XGrabKeyboard(display, window, 0, GrabModeAsync, GrabModeAsync, CurrentTime);
     fprintf(stderr, "LEVEL1: XGrabKeyboard status: %d\n", status);
-    sym1 = XK_j;
+    sym1 = it->sym;
     level = 'j';
+  }
+  else if( level==1 && it->sym==XK_semicolon ) {
+    release_find = it->ev.xkey.keycode;
+    it->ev.xkey.keycode = last_press_event.xkey.keycode;
+    it->ev.xkey.state = last_press_event.xkey.state;
+    release_replace = last_press_event.xkey.keycode;
+    fprintf(stderr, "LEVEL1: REPEAT! sym:%c state:%x\n", last_press_event.xkey.keycode, last_press_event.xkey.state);
   }
   else if( level=='j' ) {
     #define LJCODE(from,to)                                                      \
@@ -189,7 +197,7 @@ void enqueue(XEvent event)
         mask = 0;                                                                \
       }
 
-    if( it->sym==XK_q ) {
+    if( it->sym==XK_q && QUIT_ON_JQ ) {
       REMOVE(sym1);
       REMOVE(it->sym);
       XUngrabKeyboard(display, CurrentTime);
@@ -252,6 +260,7 @@ void enqueue(XEvent event)
     else if LJCODE(XK_x, XK_Delete    )
     else if LJCODE(XK_p, XK_b         )
     else if LJCODE(XK_s, XK_y         )
+    else if LJCODE(XK_semicolon, XK_semicolon)
     //                c: control
     //                v: shift
     else {
@@ -323,14 +332,15 @@ void enqueue(XEvent event)
       level = 1;
       mask = 0;
     }
-    else if( it->sym==XK_w ) KEYSWAP(XK_Up   ,mask);
-    else if( it->sym==XK_a ) KEYSWAP(XK_Left ,mask);
-    else if( it->sym==XK_s ) KEYSWAP(XK_Down ,mask);
-    else if( it->sym==XK_d ) KEYSWAP(XK_Right,mask);
-    else if( it->sym==XK_h ) KEYSWAP(XK_Left ,mask);
-    else if( it->sym==XK_j ) KEYSWAP(XK_Down ,mask);
-    else if( it->sym==XK_k ) KEYSWAP(XK_Up   ,mask);
-    else if( it->sym==XK_l ) KEYSWAP(XK_Right,mask);
+    else if( it->sym==XK_w ) KEYSWAP(XK_Up    ,mask);
+    else if( it->sym==XK_a ) KEYSWAP(XK_Left  ,mask);
+    else if( it->sym==XK_s ) KEYSWAP(XK_Down  ,mask);
+    else if( it->sym==XK_d ) KEYSWAP(XK_Right ,mask);
+    else if( it->sym==XK_h ) KEYSWAP(XK_Left  ,mask);
+    else if( it->sym==XK_j ) KEYSWAP(XK_Down  ,mask);
+    else if( it->sym==XK_k ) KEYSWAP(XK_Up    ,mask);
+    else if( it->sym==XK_l ) KEYSWAP(XK_Right ,mask);
+    else if( it->sym==XK_x ) KEYSWAP(XK_Delete,mask);
   }
   else if( level=='n' ) {
     if( it->sym==XK_q ) {
@@ -392,6 +402,8 @@ void dequeue()
     if( !it->exists )
       continue;
     it->ev.xkey.window = target;
+    if( it->ev.type==KeyPress )
+      last_press_event = it->ev;
     XSendEvent(display, target, True, 0, &it->ev);
 
     fprintf(stderr,
@@ -435,6 +447,8 @@ int main(int argc, char* argv[])
 
   // grab the level 1 key
   grab(XK_j);
+  grab(XK_semicolon);
+  XEvent event;
 
   // Actual title code
   for (;;) {
