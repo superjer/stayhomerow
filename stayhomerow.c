@@ -186,6 +186,10 @@ void enqueue(XEvent event)
     release_replace = last_press_event.xkey.keycode;
     fprintf(stderr, "LEVEL1: REPEAT! sym:%c state:%x\n", last_press_event.xkey.keycode, last_press_event.xkey.state);
   }
+  else if( level==1 ) {
+    fprintf(stderr, "LEVEL1: Mysterious sym caught: %d '%c'\n", (int)it->sym, (int)it->sym);
+    // FIXME: this can happen when pressing a non-level-1 key while a level-1 key is already down, so we have focus
+  }
   else if( level=='j' ) {
     #define LJCODE(from,to)                                                      \
       ( it->sym==from ) {                                                        \
@@ -303,8 +307,8 @@ void enqueue(XEvent event)
     else if LKCODE(XK_k, XK_v         , XK_bar        , mask|ShiftMask)
     else if LKCODE(XK_k, XK_n         , XK_ampersand  , mask|ShiftMask)
     else if LKCODE(XK_k, XK_m         , XK_minus      , mask          )
-    else if LKCODE(XK_k, XK_comma     , XK_greater    , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_period    , XK_less       , mask|ShiftMask)
+    else if LKCODE(XK_k, XK_comma     , XK_less       , mask          )
+    else if LKCODE(XK_k, XK_period    , XK_greater    , mask|ShiftMask)
     else if LKCODE(XK_g, XK_m         , XK_F1         , mask          )
     else if LKCODE(XK_g, XK_comma     , XK_F2         , mask          )
     else if LKCODE(XK_g, XK_period    , XK_F3         , mask          )
@@ -407,10 +411,11 @@ void dequeue()
     XSendEvent(display, target, True, 0, &it->ev);
 
     fprintf(stderr,
-        " Sent %s event sym '%s', raw: %c\n",
+        " Sent %s event sym '%s', raw: %c coad: %d\n",
         event2str(it->ev),
         XKeysymToString(it->sym),
-        (int)it->sym
+        (int)it->sym,
+        (int)it->ev.xkey.keycode
     );
   }
 
