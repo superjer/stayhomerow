@@ -41,7 +41,7 @@ KeySym movkeys[] = { XK_x, XK_q,
 KeySym numkeys[] = { XK_d,     XK_q,
                                XK_8,     XK_9,      XK_0,
                      XK_u,     XK_i,     XK_o,      XK_p,
-                     /*j*/     XK_k,     XK_l,      XK_semicolon,
+                     /*j*/     XK_k,     XK_l,      /*semicolon*/
                      XK_m,     XK_comma, XK_period, XK_slash,
                      XK_space, XK_Alt_R, XK_Super_R,              };
 
@@ -79,18 +79,18 @@ int handle_error(Display* display, XErrorEvent* error)
   return original_error_handler(display, error);
 }
 
-void grab(KeySym ks, int mask)
+void grab(KeySym ks)
 {
   KeyCode kc = XKeysymToKeycode(display, ks);
-  XGrabKey(display, kc, mask         , window, True, GrabModeAsync, GrabModeAsync);
-  XGrabKey(display, kc, mask|Mod2Mask, window, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(display, kc, 0, window, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(display, kc, Mod2Mask, window, True, GrabModeAsync, GrabModeAsync);
 }
 
-void ungrab(KeySym ks,int mask)
+void ungrab(KeySym ks)
 {
   KeyCode kc = XKeysymToKeycode(display, ks);
-  XUngrabKey(display, kc, mask         , window);
-  XUngrabKey(display, kc, mask|Mod2Mask, window);
+  XUngrabKey(display, kc, 0, window);
+  XUngrabKey(display, kc, Mod2Mask, window);
 }
 
 const char *event2str(XEvent ev)
@@ -231,7 +231,7 @@ void enqueue(XEvent event)
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
       XUngrabKeyboard(display, CurrentTime);
       for( i=0; i<COUNT(movkeys); i++ )
-        grab(movkeys[i], 0);
+        grab(movkeys[i]);
       fprintf(stderr, "LEVELJ: MOVE!\n");
       level = 'm';
     }
@@ -241,7 +241,7 @@ void enqueue(XEvent event)
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
       XUngrabKeyboard(display, CurrentTime);
       for( i=0; i<COUNT(numkeys); i++ )
-        grab(numkeys[i], 0);
+        grab(numkeys[i]);
       fprintf(stderr, "LEVELJ: NUMPAD!\n");
       level = 'n';
     }
@@ -331,7 +331,7 @@ void enqueue(XEvent event)
     if( it->sym==XK_q ) {
       REMOVE(it->sym);
       for( i=0; i<COUNT(movkeys); i++ )
-        ungrab(movkeys[i], 0);
+        ungrab(movkeys[i]);
       fprintf(stderr, "LEVELM: XUngrab H,K,L,Q\n");
       level = 1;
       mask = 0;
@@ -350,7 +350,7 @@ void enqueue(XEvent event)
     if( it->sym==XK_q ) {
       REMOVE(it->sym);
       for( i=0; i<COUNT(numkeys); i++ )
-        ungrab(numkeys[i], 0);
+        ungrab(numkeys[i]);
       fprintf(stderr, "LEVELN: XUngrab Numpad keys\n");
       level = 1;
     }
@@ -451,8 +451,8 @@ int main(int argc, char* argv[])
   original_error_handler = XSetErrorHandler(&handle_error);
 
   // grab the level 1 key
-  grab(XK_j, 0);
-  grab(XK_semicolon, ControlMask);
+  grab(XK_j);
+  grab(XK_semicolon);
   XEvent event;
 
   // Actual title code
