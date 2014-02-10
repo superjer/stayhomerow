@@ -111,10 +111,18 @@ void enqueue(XEvent event)
   static KeyCode release_kill1 = 0;
   static KeyCode release_kill2 = 0;
 
+  int keysyms_per_keycode_return;
   struct item *it = queue + qlen++;
   it->exists = 1;
   it->ev = event;
-  it->sym = XKeycodeToKeysym(display, event.xkey.keycode, 0);
+
+  KeySym *keysym = XGetKeyboardMapping(display,
+      event.xkey.keycode,
+      1,
+      &keysyms_per_keycode_return);
+
+  it->sym = keysym[0];
+  XFree(keysym);
 
   fprintf(stderr,
       "      %s event sym '%s', raw: %c\n",
