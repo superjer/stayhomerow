@@ -225,6 +225,14 @@ void enqueue(XEvent event)
       mask |= ShiftMask;
       level = 'v';
     }
+    else if( it->sym==XK_b ) {
+      REMOVE(sym1);
+      REMOVE(it->sym);
+      it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
+      fprintf(stderr, "LEVELJ: ALT!\n");
+      mask |= Mod1Mask;
+      level = 'b';
+    }
     else if( it->sym==XK_m ) {
       REMOVE(sym1);
       REMOVE(it->sym);
@@ -262,8 +270,8 @@ void enqueue(XEvent event)
     else if LJCODE(XK_l, XK_End       )
     else if LJCODE(XK_z, XK_Page_Down )
     else if LJCODE(XK_x, XK_Delete    )
-    else if LJCODE(XK_p, XK_b         )
-    else if LJCODE(XK_s, XK_y         )
+    else if LJCODE(XK_p, XK_b )
+    else if LJCODE(XK_q, XK_Tab )
     else if LJCODE(XK_semicolon, XK_semicolon)
     //                c: control
     //                v: shift
@@ -375,7 +383,7 @@ void enqueue(XEvent event)
     else if( it->sym==XK_d         ) KEYSWAP(XK_BackSpace  ,mask          );
     mask = 0;
   }
-  else if( level=='c' || level=='v' ) {
+  else if( level=='c' || level=='v' || level=='b' ) {
     if( it->sym==XK_j ) {
       level = 'j';
       fprintf(stderr, "LEVEL C: starting new sequence, mask:%d\n", mask);
