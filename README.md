@@ -44,8 +44,6 @@ while freuquently useful, is quite a reach from the QWERTY home row.
     jz     Page Down      Z is down from homerow and directly below W
     jj     j              Sometimes you just need one j
 
-Note: Typing  jq  causes stayhomerow to quit.
-
 Note: Type  jj  to simulate a single j, in case you need to literally type  jx,  or similar.
 
 
@@ -153,6 +151,12 @@ F10, F11, and F12 can be typed by pressing  jgp,  jg[,  and  jg].
        └─┬─┴─┬─┴─┬─┴─┐                 └─┬─┴─┬─┴─┬─┴─┐
          │ M │ , │ . │                   │F1 │F2 │F3 │
          └───┴───┴───┘                   └───┴───┴───┘
+
+
+Repeat last sequence  [ ; ]
+---------------------------
+
+Pressing the  ;  key will repeat the last sequence entered. To type a literal semicolon, use  j;.
 
 
 Not implemented yet
