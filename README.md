@@ -3,22 +3,49 @@ stayhomerow
 
 Key sequences for X11 that allow you to type difficult keys without leaving the home row.
 
-![stayhomerow chart](http://www.superjer.com/lies/stayhomerow-920.png)
+                      ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───────┐
+                      │   │F1 │F2 │F3 │F4 │F5 │F6 │F7 │F8 │F9 │F10│F11│F12│       │
+                      ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┤
+  Tap the Ctrl key    │     │ ( │ ) │   │   │ ~ │   │   │ { │ } │ + │   │   │     │
+  to switch the       ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┤
+  keyboard layout     │Esc   │Alt│Shf│Del│ _ │ ` │Hom│PgD│PgU│End│   │   │        │
+  to this  ━━▶        ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────────┤
+                      │Repeat* │ < │ > │Ctl│ | │Bks│N* │M* │   │   │   │          │
+                      ├────┬───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴───┼───┴┬────┬────┤
+                      │    │    │    │                        │    │    │    │    │
+                      └────┴────┴────┴────────────────────────┴────┴────┴────┴────┘
 
-About
+                        This layout assumes you have Caps remapped to Ctrl in X11.
+
+                        *Repeat works without pressing Ctrl first.
+                        *N is for Numpad mode.
+                        *M is for Movement mode.
+
+
+XCAPE
 -----
 
-All the sequences in stayhomerow begin with the letter  j,  taking advantage of two things:
+You must install and run XCAPE to get this stuff working:
 
-  1. The  j  key is the easiest key to press on QWERTY in the home row position, and
-  2. English words almost never contain a  j  followed by another consonant.
+  <https://github.com/alols/xcape>
 
-Unlike other methods, the stayhomerow sequences should work in any application, text-entry or not.
-This is because stayhomerow buffers your keystrokes after typing  j  and only sends a synthetic
-keypress once you've fully specified what you want.
+Run XCAPE like this:
+
+  xcape -t 250 -e 'Control_L=KP_Multiply;Shift_L=KP_Divide'
+
+This remaps Left Ctrl to numpad  *  and Left Shift to numpad  /, but only when they are tapped
+rather quickly. If I was smarter I'd have stayhomerow do this itself. Sorry!
+
+
+How it works
+------------
+
+Unlike other methods, the stayhomerow mappings should work in any application, text-entry or not.
+This is because stayhomerow buffers your keystrokes after tapping  Ctrl  and only sends the
+synthetic keypress once you've fully specified what you want.
 
 Unfortunately X11 is not designed for any of this, as far as I can tell. You will notice the focus
-temporarily leaving your current application while typing a sequence, due to X11 limitations. Also,
+temporarily leaving your current application while using a mapping, due to X11 limitations. Also,
 holding down a key and letting it repeat works, but you won't see anything until you let go.
 
 Some applications (e.g. Firefox) will not accept synthetic keypresses when they are out of focus,
@@ -27,74 +54,65 @@ application regains focus. This should happen immediately when you press the fin
 sequence.
 
 
-Main sequences  [ j ]
----------------------
+Main sequences
+--------------
 
-One of the most useful sequences is  jl  (JL),  which simulates pressing the End key. The End key,
+One of the most useful mappings is  L,  which simulates pressing the End key. The End key,
 while freuquently useful, is quite a reach from the QWERTY home row.
 
-    Seq    Result         Justification
-    ---    ------         -------------
-    jh     Home           H is for Home, and typing j then h is a leftward movement
-    jl     End            L is at the End of the letters, and typing it is a rightward movement
-    jf     Esc            F is shaped a bit like E? It's also extremely easy to type
-    jd     Backspace      D is for delete, which is what Backspace does
-    jx     Delete         Because backspace is more important and D is easier to type
-    jw     Page Up        W is up from homerow
-    jz     Page Down      Z is down from homerow and directly below W
-    jj     j              Sometimes you just need one j
-
-Note: Type  jj  to simulate a single j, in case you need to literally type  jx,  or similar.
+    Mapping      Result      Justification
+    -------      ------      -------------
+    Ctrl, H      Home        H is for Home
+    Ctrl, L      End         L is at the End of the homerow
+    Ctrl, Ctrl   Esc         Tapping Ctrl twice is easy and fun
+    Ctrl, B      Backspace   B is for Backspace
+    Ctrl, D      Delete      D is for Delete
+    Ctrl, J      Page Down   J means down in HJKL
+    Ctrl, K      Page Up     K means up in HJKL
 
 
-Symbols and punctuation  [ jk ]
--------------------------------
+Symbols and punctuation
+-----------------------
 
-Symbols and punctuation sequences all start with  jk. This is mostly because  jk  is very easy to
-type. Some characters are harder than others to type on QWERTY already, so this is taken into
-account. For example, no sequences contain the  y  or  b  keys. And semicolon has no sequence since
-it can already be typed easily.
+Some symbols and punctuation could be easier to type, like { curly braces }. Some symbols are
+inaccessible on some keyboards, like tilde (~) and grave (`). So let's make them all easier to
+get to.
 
-    Seq    Result         Mnemomic
-    ---    ------         --------
-    jkd    $              Dollar
-    jkp    +              Plus
-    jkm    -              Minus
-    jke    =              Equal
-    jkl    _              Low line (makes_typing_snake_case_easy_and_fun)
-    jkg    `              Grave
-    jkv    |              Vertical bar
-    jks    *              Star
-    jkr    ^              Roof
-    jkn    &              aNd
-    jki    (              In
-    jko    )              Out
-    jkj    {              (none, but it's on the left of JK)
-    jkk    }              (none, but it's on the right)
-
-For the full list, see chart.html.
+    Mapping      Result      Mnemomic
+    -------      ------      --------
+    Ctrl, Q      (           (none, these are just neighbors)
+    Ctrl, W      )
+    Ctrl, T      ~           Tilde
+    Ctrl, I      {           In
+    Ctrl, O      }           Out
+    Ctrl, P      +           Plus
+    Ctrl, F      _           Flat
+    Ctrl, G      `           Grave
+    Ctrl, Z      <           (none, these are just neighbors)
+    Ctrl, X      >
+    Ctrl, V      |           Vertical bar
 
 
-Movement mode  [ jm ]
----------------------
+Movement mode  [ M ]
+--------------------
 
-Typing  jm  causes stayhomerow to enter movement mode. Until you press  q,  you can use the
-HJKL or WASD keys as arrow keys.
+Tapping  Ctrl  then  M  causes stayhomerow to enter movement mode. Until you press  M,  you can
+use the HJKL or WASD keys as arrow keys.
 
-    ┌───┬───┐            ┌───┬───┐
-    │ Q │ W │            Quit│ ↑ │
-    └─┬─┴─┬─┴─┬───┐      └─┬─┴─┬─┴─┬───┐    ┌───┬───┬───┬───┐       ┌───┬───┬───┬───┐
-      │ A │ S │ D │ ━jm━▶  │ ← │ ↓ │ → │    │ H │ J │ K │ L │ ━jm━▶ │ ← │ ↓ │ ↑ │ → │
-      └───┴───┴───┘        └───┴───┴───┘    └───┴───┴───┴───┘       └───┴───┴───┴───┘
+        ┌───┐                ┌───┐
+        │ W │                │ ↑ │
+      ┌─┴─┬─┴─┬───┐        ┌─┴─┬─┴─┬───┐    ┌───┬───┬───┬───┐       ┌───┬───┬───┬───┐
+      │ A │ S │ D │  ━M━▶  │ ← │ ↓ │ → │    │ H │ J │ K │ L │  ━M━▶ │ ← │ ↓ │ ↑ │ → │
+      └───┴───┴───┘        └───┴───┴───┘    └───┴─┬─┴─┬─┴───┘       └───┴─┬─┴─┬─┴───┘
+                                                  │ M │                   │Quit
+All keys other than these nine work normally.     └───┘                   └───┘
 
-All keys other than these nine work normally.
 
+Numpad mode  [ N ]
+------------------
 
-Numpad mode  [ jn ]
--------------------
-
-Typing  jn  causes stayhomerow to enter numpad mode. Until you press  q,  the right hand
-position mimicks the numeric keypad, as shown below.  You can also press  d  for Backspace
+Tapping  Ctrl  then  N  causes stayhomerow to enter numpad mode. Until you press  N,  the right
+hand position mimicks the numeric keypad, as shown below.  You can also press  d  for Backspace
 in this mode.
 
       ┌───┬───┬───┐               ┌───┬───┬───┐
@@ -102,61 +120,39 @@ in this mode.
     ┌─┴─┬─┴─┬─┴─┬─┴─┐           ┌─┴─┬─┴─┬─┴─┬─┴─┐
     │ U │ I │ O │ P │           │ 7 │ 8 │ 9 │ + │
     └┬──┴┬──┴┬──┴┬──┴┐          └┬──┴┬──┴┬──┴┬──┴┐
-     │ J │ K │ L │ ; │   ━jn━▶   │ 4 │ 5 │ 6 │ + │
-     └─┬─┴─┬─┴─┬─┴─┬─┴─┐         └─┬─┴─┬─┴─┬─┴─┬─┴─┐
-       │ M │ , │ . │ / │           │ 1 │ 2 │ 3 │ Enter
-    ┈──┴───┴──┬┴───┼───┴┐       ┈──┴───┴──┬┴───┼───┴┐
-              │ Alt│ Win│               0 │  . │ Enter
-    ┈─────────┴────┴────┘       ┈─────────┴────┴────┘
+     │ J │ K │ L │ ; │    ━N━▶   │ 4 │ 5 │ 6 │ + │
+   ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐       ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐
+   │ N │ M │ , │ . │ / │       Quit│ 1 │ 2 │ 3 │Enter
+  ┈┴───┴───┴──┬┴───┼───┴┐     ┈┴───┴───┴──┬┴───┼───┴┐
+              │ Alt│ Win│               0 │  . │Enter
+  ┈───────────┴────┴────┘     ┈───────────┴────┴────┘
 
 All keys other than Q, D, and the 18 keys in the diagram work normally.
 
 
-Control and shift  [ jc ]  [ jv ]
----------------------------------
+Control, Shift and Alt  [ C  S  A ]
+-----------------------------------
 
-Typing  jc  causes the next key to be sent as though the Ctrl key is held down.
+Tapping  Ctrl  then  C  causes the next key to be sent as though the Ctrl  key is held down.
+Tapping  Ctrl  then  S  causes the next key to be sent as though the Shift key is held down.
+Tapping  Ctrl  then  A  causes the next key to be sent as though the Alt   key is held down.
 
-Typing  jv  causes the next key to be sent as though the Shift key is held down.
-
-These can be used together. They can be used with a regular old single key press, or with another
-stayhomerow sequence.
-
-    Seq      Result
-    ---      ------
-    jca      Ctrl-A
-    jc<End>  Ctrl-End
-    jcjl     Ctrl-End
-    jcjkp    Ctrl-+
-    jcjkd    Ctrl-$   (It's control-capital-four! Why? Because we can.)
-    jva      A
-    jv<End>  Shift-End
-    jcjvjl   Ctrl-Shift-End
+These can be used together.
 
 Note: Ctrl and Shift stay held down during Movement mode (useful) and Numpad mode (not so useful).
 
 
-Function keys  [ jg ]
----------------------
+Function keys
+-------------
 
-The sequences for the function keys, F1-F12, all start with  jg. The layout is similar to Numpad
-mode, except 1-9 are F1-F9.
-
-F10, F11, and F12 can be typed by pressing  jgp,  jg[,  and  jg].
-
-      ┌───┬───┬───┬───┬───┬───┐       ┌───┬───┬───┬───┬───┬───┐
-      │ U │ I │ O │ P │ [ │ ] │       │F7 │F8 │F9 │F10│F11│F12│
-      └┬──┴┬──┴┬──┴┬──┴───┴───┘       └┬──┴┬──┴┬──┴┬──┴───┴───┘
-       │ J │ K │ L │            ━jg━▶  │F4 │F5 │F6 │
-       └─┬─┴─┬─┴─┬─┴─┐                 └─┬─┴─┬─┴─┬─┴─┐
-         │ M │ , │ . │                   │F1 │F2 │F3 │
-         └───┴───┴───┘                   └───┴───┴───┘
+Tap  Ctrl  followed by a number, the  -  key or the  =  key and stayhomerow will send the
+corresponding function key, F1-F12. This is especially useful on limited keyboards.
 
 
-Repeat last sequence  [ ; ]
----------------------------
+Repeat last key with Shift
+--------------------------
 
-Pressing the  ;  key will repeat the last sequence entered. To type a literal semicolon, use  j;.
+Tapping the Shift key re-sends the previously selected key.
 
 
 Not implemented yet
