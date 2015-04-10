@@ -26,7 +26,6 @@
 
 #define QUEUE_MAX 1000
 #define COUNT(x) (sizeof (x) / sizeof *(x))
-#define QUIT_ON_JQ 0
 
 struct item {
   int exists;
@@ -34,14 +33,14 @@ struct item {
   KeySym sym;
 };
 
-KeySym movkeys[] = { XK_x, XK_q,
+KeySym movkeys[] = { XK_x, XK_m,
                      XK_w, XK_a, XK_s, XK_d,
-                     XK_h, /*j*/ XK_k, XK_l, };
+                     XK_h, XK_j, XK_k, XK_l, };
 
-KeySym numkeys[] = { XK_d,     XK_q,
+KeySym numkeys[] = { XK_d,     XK_n,
                                XK_8,     XK_9,      XK_0,
                      XK_u,     XK_i,     XK_o,      XK_p,
-                     /*j*/     XK_k,     XK_l,      /*semicolon*/
+                     XK_j,     XK_k,     XK_l,      XK_semicolon,
                      XK_m,     XK_comma, XK_period, XK_slash,
                      XK_space, XK_Alt_R, XK_Super_R,              };
 
@@ -49,7 +48,7 @@ Display *display;
 Window window;
 struct item queue[QUEUE_MAX] = {{0}};
 int qlen = 0;
-int level = 1;
+int level = '1';
 int quit = 0;
 int mask = 0;
 KeySym seq[3] = {0};
@@ -79,18 +78,18 @@ int handle_error(Display* display, XErrorEvent* error)
   return original_error_handler(display, error);
 }
 
-void grab(KeySym ks)
+void grab(KeySym ks, int mask)
 {
   KeyCode kc = XKeysymToKeycode(display, ks);
-  XGrabKey(display, kc, 0, window, True, GrabModeAsync, GrabModeAsync);
-  XGrabKey(display, kc, Mod2Mask, window, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(display, kc, mask           , window, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(display, kc, mask | Mod2Mask, window, True, GrabModeAsync, GrabModeAsync);
 }
 
-void ungrab(KeySym ks)
+void ungrab(KeySym ks, int mask)
 {
   KeyCode kc = XKeysymToKeycode(display, ks);
-  XUngrabKey(display, kc, 0, window);
-  XUngrabKey(display, kc, Mod2Mask, window);
+  XUngrabKey(display, kc, mask           , window);
+  XUngrabKey(display, kc, mask | Mod2Mask, window);
 }
 
 const char *event2str(XEvent ev)
@@ -105,32 +104,36 @@ void enqueue(XEvent event)
     return;
   }
 
-  static KeySym sym1 = 0;
-  static KeySym sym2 = 0;
   static KeyCode release_find = 0;
   static KeyCode release_replace = 0;
   static KeyCode release_kill1 = 0;
   static KeyCode release_kill2 = 0;
 
   int keysyms_per_keycode_return;
-  struct item *it = queue + qlen++;
-  it->exists = 1;
-  it->ev = event;
 
   KeySym *keysym = XGetKeyboardMapping(display,
       event.xkey.keycode,
       1,
       &keysyms_per_keycode_return);
 
+  if( keysym[0] == XK_Control_L ) // XCAPE shows us the second Ctrl_L press?!?!
+    return;
+
+  struct item *it = queue + qlen++;
+  it->exists = 1;
+  it->ev = event;
+
   it->sym = keysym[0];
   XFree(keysym);
 
+#if 0
   fprintf(stderr,
       "      %s event sym '%s', raw: %c\n",
       event2str(it->ev),
       XKeysymToString(it->sym),
       (int)it->sym
   );
+#endif
 
   int i;
 
@@ -181,175 +184,133 @@ void enqueue(XEvent event)
       release_kill2 = 0;
     }
   }
-  else if( level==1 && it->sym==XK_j ) {
+  else if( level=='1' && it->sym==XK_KP_Multiply ) {
     int status = XGrabKeyboard(display, window, 0, GrabModeAsync, GrabModeAsync, CurrentTime);
-    fprintf(stderr, "LEVEL1: XGrabKeyboard status: %d\n", status);
-    sym1 = it->sym;
-    level = 'j';
+    /* fprintf(stderr, "LEVEL1: XGrabKeyboard status: %d\n", status); */
+    it->exists = 0;
+    qlen--;
+    level = '2';
   }
-  else if( level==1 && it->sym==XK_semicolon ) {
+  else if( level=='1' && it->sym==XK_KP_Divide ) {
     release_find = it->ev.xkey.keycode;
     it->ev.xkey.keycode = last_press_event.xkey.keycode;
     it->ev.xkey.state = last_press_event.xkey.state;
     release_replace = last_press_event.xkey.keycode;
-    fprintf(stderr, "LEVEL1: REPEAT! sym:%c state:%x\n", last_press_event.xkey.keycode, last_press_event.xkey.state);
+    /* fprintf(stderr, "LEVEL1: REPEAT! sym:%c state:%x\n", last_press_event.xkey.keycode, last_press_event.xkey.state); */
   }
-  else if( level==1 ) {
+  else if( level=='1' ) {
     fprintf(stderr, "LEVEL1: Mysterious sym caught: %d '%c'\n", (int)it->sym, (int)it->sym);
     // FIXME: this can happen when pressing a non-level-1 key while a level-1 key is already down, so we have focus
   }
-  else if( level=='j' ) {
-    #define LJCODE(from,to)                                                      \
+  else if( level=='2' ) {
+    #define LJCODE(from,to,shf)                                                  \
       ( it->sym==from ) {                                                        \
-        KEYSWAP(to,mask?:AnyModifier);                                           \
-        REMOVE(sym1);                                                            \
+        KEYSWAP(to,(mask?:AnyModifier)|shf);                                     \
         XUngrabKeyboard(display, CurrentTime);                                   \
-        fprintf(stderr, "LEVELJ: XUngrabKeyboard, XK_j " #from " -> " #to "\n"); \
-        level = 1;                                                               \
+        level = '1';                                                             \
         mask = 0;                                                                \
       }
+#if 0
+        fprintf(stderr, "LEVELJ: XUngrabKeyboard, XK_* " #from " -> " #to "\n"); \
 
-    if( it->sym==XK_q && QUIT_ON_JQ ) {
-      REMOVE(sym1);
-      REMOVE(it->sym);
-      XUngrabKeyboard(display, CurrentTime);
-      fprintf(stderr, "LEVELJ: QUIT!\n");
-      level = 1;
-      quit = 1;
-    }
-    else if( it->sym==XK_c ) {
-      REMOVE(sym1);
+#endif
+
+    if( it->sym==XK_c ) {
       REMOVE(it->sym);
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
-      fprintf(stderr, "LEVELJ: CONTROL!\n");
+      fprintf(stderr, "Control locked down\n");
       mask |= ControlMask;
       level = 'c';
     }
-    else if( it->sym==XK_v ) {
-      REMOVE(sym1);
+    else if( it->sym==XK_s ) {
       REMOVE(it->sym);
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
-      fprintf(stderr, "LEVELJ: SHIFT!\n");
+      fprintf(stderr, "Shift locked down\n");
       mask |= ShiftMask;
-      level = 'v';
+      level = 's';
     }
-    else if( it->sym==XK_b ) {
-      REMOVE(sym1);
+    else if( it->sym==XK_a ) {
       REMOVE(it->sym);
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
-      fprintf(stderr, "LEVELJ: ALT!\n");
+      fprintf(stderr, "Alt locked down\n");
       mask |= Mod1Mask;
-      level = 'b';
+      level = 'a';
     }
     else if( it->sym==XK_m ) {
-      REMOVE(sym1);
       REMOVE(it->sym);
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
       XUngrabKeyboard(display, CurrentTime);
       for( i=0; i<COUNT(movkeys); i++ )
-        grab(movkeys[i]);
-      fprintf(stderr, "LEVELJ: MOVE!\n");
+        grab(movkeys[i], 0);
+      fprintf(stderr, "Entering movement mode\n");
       level = 'm';
     }
     else if( it->sym==XK_n ) {
-      REMOVE(sym1);
       REMOVE(it->sym);
       it->exists = 0; // why doesn't REMOVE get rid of this???? FIXME
       XUngrabKeyboard(display, CurrentTime);
       for( i=0; i<COUNT(numkeys); i++ )
-        grab(numkeys[i]);
-      fprintf(stderr, "LEVELJ: NUMPAD!\n");
+        grab(numkeys[i], 0);
+      fprintf(stderr, "Entering numpad mode\n");
       level = 'n';
     }
-    else if( it->sym==XK_k ) {
-      sym2 = it->sym;
-      level = 'k';
-    }
-    else if( it->sym==XK_g ) {
-      sym2 = it->sym;
-      level = 'g';
-    }
-    else if LJCODE(XK_j, XK_j         )
-    else if LJCODE(XK_w, XK_Page_Up   )
-    else if LJCODE(XK_d, XK_BackSpace )
-    else if LJCODE(XK_f, XK_Escape    )
-    //                g: repeat
-    else if LJCODE(XK_h, XK_Home      )
-    else if LJCODE(XK_l, XK_End       )
-    else if LJCODE(XK_z, XK_Page_Down )
-    else if LJCODE(XK_x, XK_Delete    )
-    else if LJCODE(XK_p, XK_b )
-    else if LJCODE(XK_q, XK_Tab )
-    else if LJCODE(XK_semicolon, XK_semicolon)
-    //                c: control
-    //                v: shift
+    else if LJCODE(XK_KP_Multiply, XK_Escape, 0)
+
+    else if LJCODE(XK_q, XK_parenleft , ShiftMask)
+    else if LJCODE(XK_w, XK_parenright, ShiftMask)
+    else if LJCODE(XK_e, XK_Escape    , 0)
+    //                e  unused
+    //                r  unused
+    else if LJCODE(XK_t, XK_asciitilde, ShiftMask)
+    //                y  unused
+    //                u  unused
+    else if LJCODE(XK_i, XK_braceleft , ShiftMask)
+    else if LJCODE(XK_o, XK_braceright, ShiftMask)
+    else if LJCODE(XK_p, XK_plus      , ShiftMask)
+
+    //                a  alt
+    //                s  shift
+    else if LJCODE(XK_d, XK_Delete    , 0)
+    else if LJCODE(XK_f, XK_underscore, ShiftMask)
+    else if LJCODE(XK_g, XK_grave     , 0)
+    else if LJCODE(XK_h, XK_Home      , 0)
+    else if LJCODE(XK_j, XK_Page_Down , 0)
+    else if LJCODE(XK_k, XK_Page_Up   , 0)
+    else if LJCODE(XK_l, XK_End       , 0)
+
+    else if LJCODE(XK_z, XK_less      , 0)
+    else if LJCODE(XK_x, XK_greater   , ShiftMask)
+    //                c  control
+    else if LJCODE(XK_v, XK_bar       , ShiftMask)
+    else if LJCODE(XK_b, XK_BackSpace , 0)
+    //                n  number mode
+    //                m  movement mode
+
+    else if LJCODE(XK_1    , XK_F1 , 0)
+    else if LJCODE(XK_2    , XK_F2 , 0)
+    else if LJCODE(XK_3    , XK_F3 , 0)
+    else if LJCODE(XK_4    , XK_F4 , 0)
+    else if LJCODE(XK_5    , XK_F5 , 0)
+    else if LJCODE(XK_6    , XK_F6 , 0)
+    else if LJCODE(XK_7    , XK_F7 , 0)
+    else if LJCODE(XK_8    , XK_F8 , 0)
+    else if LJCODE(XK_9    , XK_F9 , 0)
+    else if LJCODE(XK_0    , XK_F10, 0)
+    else if LJCODE(XK_minus, XK_F11, 0)
+    else if LJCODE(XK_equal, XK_F12, 0)
     else {
       XUngrabKeyboard(display, CurrentTime);
-      fprintf(stderr, "LEVELJ: XUngrabKeyboard\n");
-      level = 1;
+      level = '1';
       mask = 0;
     }
   }
-  else if( level=='k' || level=='g' ) {
-    #define LKCODE(from2,from3,to,mask)   \
-      ( sym2==from2 && it->sym==from3 ) { \
-        KEYSWAP(to,mask);                 \
-        REMOVE(sym1);                     \
-        REMOVE(sym2);                     \
-      }
-
-    // JK -- Symbol and punctuation keys
-    if(0) ;
-    else if LKCODE(XK_k, XK_q         , XK_quotedbl   , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_w         , XK_backslash  , mask          )
-    else if LKCODE(XK_k, XK_e         , XK_equal      , mask          )
-    else if LKCODE(XK_k, XK_r         , XK_asciicircum, mask|ShiftMask)
-    else if LKCODE(XK_k, XK_t         , XK_asciitilde , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_o         , XK_parenright , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_i         , XK_parenleft  , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_p         , XK_plus       , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_a         , XK_at         , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_s         , XK_asterisk   , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_d         , XK_dollar     , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_f         , XK_Return     , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_g         , XK_grave      , mask          )
-    else if LKCODE(XK_k, XK_h         , XK_numbersign , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_j         , XK_braceleft  , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_k         , XK_braceright , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_l         , XK_underscore , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_semicolon , XK_colon      , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_x         , XK_exclam     , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_c         , XK_percent    , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_v         , XK_bar        , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_n         , XK_ampersand  , mask|ShiftMask)
-    else if LKCODE(XK_k, XK_m         , XK_minus      , mask          )
-    else if LKCODE(XK_k, XK_comma     , XK_less       , mask          )
-    else if LKCODE(XK_k, XK_period    , XK_greater    , mask|ShiftMask)
-    else if LKCODE(XK_g, XK_m         , XK_F1         , mask          )
-    else if LKCODE(XK_g, XK_comma     , XK_F2         , mask          )
-    else if LKCODE(XK_g, XK_period    , XK_F3         , mask          )
-    else if LKCODE(XK_g, XK_j         , XK_F4         , mask          )
-    else if LKCODE(XK_g, XK_k         , XK_F5         , mask          )
-    else if LKCODE(XK_g, XK_l         , XK_F6         , mask          )
-    else if LKCODE(XK_g, XK_u         , XK_F7         , mask          )
-    else if LKCODE(XK_g, XK_i         , XK_F8         , mask          )
-    else if LKCODE(XK_g, XK_o         , XK_F9         , mask          )
-    else if LKCODE(XK_g, XK_p         , XK_F10        , mask          )
-    else if LKCODE(XK_g, XK_bracketleft , XK_F11      , mask          )
-    else if LKCODE(XK_g, XK_bracketright, XK_F12      , mask          )
-
-    XUngrabKeyboard(display, CurrentTime);
-    fprintf(stderr, "LEVELK: XUngrabKeyboard\n");
-    level = 1;
-    mask = 0;
-  }
   else if( level=='m' ) {
-    if( it->sym==XK_q ) {
+    if( it->sym==XK_KP_Multiply || it->sym==XK_m ) {
       REMOVE(it->sym);
       for( i=0; i<COUNT(movkeys); i++ )
-        ungrab(movkeys[i]);
-      fprintf(stderr, "LEVELM: XUngrab H,K,L,Q\n");
-      level = 1;
+        ungrab(movkeys[i], 0);
+      fprintf(stderr, "Exiting movement mode\n");
+      level = '1';
       mask = 0;
     }
     else if( it->sym==XK_w ) KEYSWAP(XK_Up    ,mask);
@@ -363,12 +324,12 @@ void enqueue(XEvent event)
     else if( it->sym==XK_x ) KEYSWAP(XK_Delete,mask);
   }
   else if( level=='n' ) {
-    if( it->sym==XK_q ) {
+    if( it->sym==XK_KP_Multiply || it->sym==XK_n ) {
       REMOVE(it->sym);
       for( i=0; i<COUNT(numkeys); i++ )
-        ungrab(numkeys[i]);
-      fprintf(stderr, "LEVELN: XUngrab Numpad keys\n");
-      level = 1;
+        ungrab(numkeys[i], 0);
+      fprintf(stderr, "Exiting numpad mode\n");
+      level = '1';
     }
     else if( it->sym==XK_8         ) KEYSWAP(XK_KP_Divide  ,mask          );
     else if( it->sym==XK_9         ) KEYSWAP(XK_KP_Multiply,mask          );
@@ -391,16 +352,16 @@ void enqueue(XEvent event)
     else if( it->sym==XK_d         ) KEYSWAP(XK_BackSpace  ,mask          );
     mask = 0;
   }
-  else if( level=='c' || level=='v' || level=='b' ) {
-    if( it->sym==XK_j ) {
-      level = 'j';
-      fprintf(stderr, "LEVEL C: starting new sequence, mask:%d\n", mask);
+  else if( level=='c' || level=='s' || level=='a' ) {
+    if( it->sym==XK_KP_Multiply ) {
+      level = '2';
+      /* fprintf(stderr, "LEVEL CSA: starting new sequence, mask:%d\n", mask); */
     }
     else {
       it->ev.xkey.state |= mask;
       XUngrabKeyboard(display, CurrentTime);
-      fprintf(stderr, "LEVEL C: regular keypress, mask:%d\n", mask);
-      level = 1;
+      /* fprintf(stderr, "LEVEL CSA: regular keypress, mask:%d\n", mask); */
+      level = '1';
       mask = 0;
     }
   }
@@ -427,10 +388,9 @@ void dequeue()
     XSendEvent(display, target, True, 0, &it->ev);
 
     fprintf(stderr,
-        " Sent %s event sym '%s', raw: %c coad: %d\n",
+        " Sent %-10s event sym %14s, code: %3d\n",
         event2str(it->ev),
         XKeysymToString(it->sym),
-        (int)it->sym,
         (int)it->ev.xkey.keycode
     );
   }
@@ -466,9 +426,9 @@ int main(int argc, char* argv[])
 
   original_error_handler = XSetErrorHandler(&handle_error);
 
-  // grab the level 1 key
-  grab(XK_j);
-  grab(XK_semicolon);
+  // grab the level 1 keys
+  grab(XK_KP_Multiply, 0);
+  grab(XK_KP_Divide, 0);
   XEvent event;
 
   // Actual title code
@@ -488,6 +448,7 @@ int main(int argc, char* argv[])
         break;
 
       case FocusIn:
+      case MappingNotify:
         break;
 
       default:
