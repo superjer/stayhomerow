@@ -3,23 +3,24 @@ stayhomerow
 
 Key sequences for X11 that allow you to type difficult keys without leaving the home row.
 
-                      ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───────┐
-                      │   │F1 │F2 │F3 │F4 │F5 │F6 │F7 │F8 │F9 │F10│F11│F12│       │
-                      ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┤
-  Tap the Ctrl key    │     │ ( │ ) │   │   │ ~ │   │   │ { │ } │ + │   │   │     │
-  to switch the       ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┤
-  keyboard layout     │Esc   │Alt│Shf│Del│ _ │ ` │Hom│PgD│PgU│End│   │   │        │
-  to this  ━━▶        ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────────┤
-                      │Repeat* │ < │ > │Ctl│ | │Bks│N* │M* │   │   │   │          │
-                      ├────┬───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴───┼───┴┬────┬────┤
-                      │    │    │    │                        │    │    │    │    │
-                      └────┴────┴────┴────────────────────────┴────┴────┴────┴────┘
+With stayhomerow, tap the  Ctrl  key to switch the keyboard layout to this:
 
-                        This layout assumes you have Caps remapped to Ctrl in X11.
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───────┐
+    │   │F1 │F2 │F3 │F4 │F5 │F6 │F7 │F8 │F9 │F10│F11│F12│       │
+    ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┤
+    │     │ ( │ ) │   │   │ ~ │   │   │ { │ } │ + │   │   │     │
+    ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┤
+    │Esc   │Alt│Shf│Del│ _ │ ` │Hom│PgD│PgU│End│   │   │        │
+    ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────────┤
+    │Repeat* │ < │ > │Ctl│ | │Bks│N* │M* │   │   │   │          │
+    ├────┬───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴───┼───┴┬────┬────┤
+    │    │    │    │                        │    │    │    │    │
+    └────┴────┴────┴────────────────────────┴────┴────┴────┴────┘
 
-                        *Repeat works without pressing Ctrl first.
-                        *N is for Numpad mode.
-                        *M is for Movement mode.
+    This layout assumes you have Caps remapped to Ctrl in X11.
+    *Repeat works without pressing Ctrl first.
+    *N is for Numpad mode.
+    *M is for Movement mode.
 
 
 XCAPE
@@ -27,11 +28,11 @@ XCAPE
 
 You must install and run XCAPE to get this stuff working:
 
-  <https://github.com/alols/xcape>
+https://github.com/alols/xcape
 
 Run XCAPE like this:
 
-  xcape -t 250 -e 'Control_L=KP_Multiply;Shift_L=KP_Divide'
+    xcape -t 250 -e 'Control_L=KP_Multiply;Shift_L=KP_Divide'
 
 This remaps Left Ctrl to numpad  *  and Left Shift to numpad  /, but only when they are tapped
 rather quickly. If I was smarter I'd have stayhomerow do this itself. Sorry!
@@ -54,11 +55,11 @@ application regains focus. This should happen immediately when you press the fin
 sequence.
 
 
-Main sequences
---------------
+Main mappings
+-------------
 
 One of the most useful mappings is  L,  which simulates pressing the End key. The End key,
-while freuquently useful, is quite a reach from the QWERTY home row.
+while frequently useful, is quite a reach from the QWERTY home row.
 
     Mapping      Result      Justification
     -------      ------      -------------
@@ -78,7 +79,7 @@ Some symbols and punctuation could be easier to type, like { curly braces }. Som
 inaccessible on some keyboards, like tilde (~) and grave (`). So let's make them all easier to
 get to.
 
-    Mapping      Result      Mnemomic
+    Mapping      Result      Mnemonic
     -------      ------      --------
     Ctrl, Q      (           (none, these are just neighbors)
     Ctrl, W      )
@@ -105,7 +106,9 @@ use the HJKL or WASD keys as arrow keys.
       │ A │ S │ D │  ━M━▶  │ ← │ ↓ │ → │    │ H │ J │ K │ L │  ━M━▶ │ ← │ ↓ │ ↑ │ → │
       └───┴───┴───┘        └───┴───┴───┘    └───┴─┬─┴─┬─┴───┘       └───┴─┬─┴─┬─┴───┘
                                                   │ M │                   │Quit
-All keys other than these nine work normally.     └───┘                   └───┘
+                                                  └───┘                   └───┘
+
+All keys other than these nine work normally.
 
 
 Numpad mode  [ N ]
@@ -115,19 +118,19 @@ Tapping  Ctrl  then  N  causes stayhomerow to enter numpad mode. Until you press
 hand position mimicks the numeric keypad, as shown below.  You can also press  d  for Backspace
 in this mode.
 
-      ┌───┬───┬───┐               ┌───┬───┬───┐
-      │ 8 │ 9 │ 0 │               │ / │ * │ - │
-    ┌─┴─┬─┴─┬─┴─┬─┴─┐           ┌─┴─┬─┴─┬─┴─┬─┴─┐
-    │ U │ I │ O │ P │           │ 7 │ 8 │ 9 │ + │
-    └┬──┴┬──┴┬──┴┬──┴┐          └┬──┴┬──┴┬──┴┬──┴┐
-     │ J │ K │ L │ ; │    ━N━▶   │ 4 │ 5 │ 6 │ + │
-   ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐       ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐
-   │ N │ M │ , │ . │ / │       Quit│ 1 │ 2 │ 3 │Enter
-  ┈┴───┴───┴──┬┴───┼───┴┐     ┈┴───┴───┴──┬┴───┼───┴┐
-              │ Alt│ Win│               0 │  . │Enter
-  ┈───────────┴────┴────┘     ┈───────────┴────┴────┘
+        ┌───┬───┬───┐               ┌───┬───┬───┐
+        │ 8 │ 9 │ 0 │               │ / │ * │ - │
+      ┌─┴─┬─┴─┬─┴─┬─┴─┐           ┌─┴─┬─┴─┬─┴─┬─┴─┐
+      │ U │ I │ O │ P │           │ 7 │ 8 │ 9 │ + │
+      └┬──┴┬──┴┬──┴┬──┴┐          └┬──┴┬──┴┬──┴┬──┴┐
+       │ J │ K │ L │ ; │    ━N━▶   │ 4 │ 5 │ 6 │ + │
+     ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐       ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐
+     │ N │ M │ , │ . │ / │       Quit│ 1 │ 2 │ 3 │Enter
+    ┈┴───┴───┴──┬┴───┼───┴┐     ┈┴───┴───┴──┬┴───┼───┴┐
+                │ Alt│ Win│               0 │  . │Enter
+    ┈───────────┴────┴────┘     ┈───────────┴────┴────┘
 
-All keys other than Q, D, and the 18 keys in the diagram work normally.
+All keys other than D and the 19 keys in the diagram work normally.
 
 
 Control, Shift and Alt  [ C  S  A ]
@@ -139,7 +142,7 @@ Tapping  Ctrl  then  A  causes the next key to be sent as though the Alt   key i
 
 These can be used together.
 
-Note: Ctrl and Shift stay held down during Movement mode (useful) and Numpad mode (not so useful).
+Note: Modifiers stay held down during Movement mode (useful) and Numpad mode (not so useful).
 
 
 Function keys
@@ -152,7 +155,8 @@ corresponding function key, F1-F12. This is especially useful on limited keyboar
 Repeat last key with Shift
 --------------------------
 
-Tapping the Shift key re-sends the previously selected key.
+Tapping the Shift key sends the previous mapping again. For example, tap Ctrl then J for PageDown.
+Then just tap Shift for another PageDown, and another, etc...
 
 
 Not implemented yet
