@@ -3,7 +3,7 @@ stayhomerow
 
 In X11, type difficult or unavailable keys without leaving the home row.
 
-![stayhomerow chart](http://www.superjer.com/lies/stayhomerow-xcape.png)
+![stayhomerow chart](http://www.superjer.com/lies/stayhomerow-xcape-simple.png)
 
 With stayhomerow, tap the  Ctrl  key to switch the keyboard layout to this:
 
