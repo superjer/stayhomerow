@@ -72,8 +72,8 @@ int find_in(KeySym needle, KeySym *haystack, int nr)
 int handle_error(Display* display, XErrorEvent* error)
 {
   if( error->error_code == BadAccess ) {
-    fprintf(stderr, "Failed to grab key! Another application has already claimed a key I need. Quitting.\n");
-    exit(EXIT_FAILURE);
+    fprintf(stderr, "Failed to grab key! Another application has already claimed a key I need.\n");
+    return 0;
   }
   return original_error_handler(display, error);
 }
