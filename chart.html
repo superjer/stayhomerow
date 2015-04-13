@@ -2,29 +2,43 @@
 <head>
 <meta http-equiv=content-type content='text/html;charset=UTF-8'>
 <style>
+* {
+box-sizing:border-box;
+}
 html {
-background:black;
+background:white;
 font-family:sans;
 }
 body {
-font-size:34px;
+font-size:24px;
 font-weight:bold;
 }
-.kebbard, .bigkebbard {
-width:1320px;
-height:250px;
+.kebbard {
+width:1220px;
+height:300px;
 margin:0 auto;
 clear:left;
+margin-bottom:10px;
 }
-.kebbard div, .bigkebbard div {
-border:10px solid black;
+.kebbard div {
+border:4px solid black;
 text-align:center;
-border-radius:10px;
+/*border-radius:6px;*/
 border-color:#CCC #888 #666 #AAA;
 background-color:#EEE;
 float:left;
-width:100px;
+width:80px;
+height:60px;
 }
+.kebbard div.bksp   { width:160px; }
+.kebbard div.tab    { width:120px; }
+.kebbard div.whack  { width:120px; }
+.kebbard div.caps   { width:140px; }
+.kebbard div.enter  { width:180px; }
+.kebbard div.lshift { width:180px; }
+.kebbard div.rshift { width:220px; }
+.kebbard div.mod    { width:100px; }
+.kebbard div.space  { width:500px; text-align:right; padding-right:40px; }
 div.deeper {
 border-color:#C00 #800 #600 #A00;
 background-color:#E00;
@@ -37,7 +51,9 @@ border-color:#EE0 #CC0 #BB0 #DD0;
 background-color:#FF0;
 }
 div.ingles {
+border-color:#DDD #BBB #BBB #CCC;
 opacity:0.3;
+color:red;
 }
 div.ingles span {
 color:#888;
@@ -53,34 +69,6 @@ div.repeat {
 border-color:#00C #008 #006 #00A;
 background-color:#00E;
 }
-.bigkebbard div:first-child {
-margin-left:780px;
-}
-.bigkebbard div:nth-child(4) {
-clear:left;
-}
-.kebbard div:nth-child(11), .bigkebbard div:nth-child(14) {
-clear:left;
-margin-left:30px;
-}
-.kebbard div:nth-child(21), .bigkebbard div:nth-child(24) {
-border-color:transparent;
-background-color:transparent;
-text-align:left;
-color:red;
-width:70px;
-clear:left;
-}
-.bigkebbard div:nth-child(35) {
-clear:left;
-margin-left:270px;
-width:630px;
-text-align:right;
-padding-right:100px;
-}
-.bigkebbard div:nth-child(36), .bigkebbard div:nth-child(37) {
-width:130px;
-}
 span {
 font-size:12px;
 display:block;
@@ -90,71 +78,85 @@ color:red;
 </head>
 <body>
 <div class=kebbard>
- <div class=normal><span>Q</span>Quit</div>
- <div class=normal><span>W</span>Pgup</div>
+ <div class=ingles><span>`</span> </div>
+ <div class=normal><span>1</span>F1</div>
+ <div class=normal><span>2</span>F2</div>
+ <div class=normal><span>3</span>F3</div>
+ <div class=normal><span>4</span>F4</div>
+ <div class=normal><span>5</span>F5</div>
+ <div class=normal><span>6</span>F6</div>
+ <div class=normal><span>7</span>F7</div>
+ <div class=normal><span>8</span>F8</div>
+ <div class=normal><span>9</span>F9</div>
+ <div class=normal><span>0</span>F10</div>
+ <div class=normal><span>-</span>F11</div>
+ <div class=normal><span>=</span>F12</div>
+ <div class="ingles bksp"><span>Backspace</span> </div>
+ <div class="ingles tab"><span>Tab</span> </div>
+ <div class=normal><span>Q</span>(</div>
+ <div class=normal><span>W</span>)</div>
  <div class=ingles><span>E</span> </div>
  <div class=ingles><span>R</span> </div>
- <div class=ingles><span>T</span> </div>
+ <div class=normal><span>Tilde</span>~</div>
  <div class=ingles><span>Y</span> </div>
  <div class=ingles><span>U</span> </div>
- <div class=ingles><span>I</span> </div>
- <div class=ingles><span>O</span> </div>
- <div class=normal><span>P</span>b</div>
- <div class=ingles><span>A</span> </div>
- <div class=normal><span>S</span>y</div>
- <div class=normal><span>D</span>Bksp</div>
- <div class=normal><span>F</span>Esc</div>
- <div class=deeper><span>G</span>Fn</div>
+ <div class=normal><span>In</span>{</div>
+ <div class=normal><span>Out</span>}</div>
+ <div class=normal><span>Plus</span>+</div>
+ <div class=ingles><span>[</span> </div>
+ <div class=ingles><span>]</span> </div>
+ <div class="ingles whack"><span>\</span> </div>
+ <div class="normal caps"><span>Caps</span>Esc</div>
+ <div class=diving><span>A</span>Alt</div>
+ <div class=diving><span>S</span>Shft</div>
+ <div class=normal><span>D</span>Del</div>
+ <div class=normal><span>Flat</span>_</div>
+ <div class=normal><span>Grave</span>`</div>
  <div class=normal><span>H</span>Hom</div>
- <div class=normal><span>J</span>j</div>
- <div class=deeper><span>K</span>Sym</div>
+ <div class=normal><span>J</span>PgD</div>
+ <div class=normal><span>K</span>PgU</div>
  <div class=normal><span>L</span>End</div>
- <div class=normal><span>;</span>;</div>
- <div style='color:white;'>J</div>
- <div class=normal><span>Z</span>Pgdn</div>
- <div class=normal><span>X</span>Del</div>
+ <div class=ingles><span>;</span> </div>
+ <div class=ingles><span>'</span> </div>
+ <div class="ingles enter"><span>Enter</span> </div>
+ <div class="ingles lshift"><span>Shift</span>Repeat</div>
+ <div class=normal><span>Z</span>&lt;</div>
+ <div class=normal><span>X</span>&gt;</div>
  <div class=diving><span>C</span>Ctrl</div>
- <div class=diving><span>V</span>Shft</div>
- <div class=ingles><span>B</span> </div>
+ <div class=normal><span>Vertical</span>|</div>
+ <div class=normal><span>B</span>Bksp</div>
  <div class=deeper><span>N</span>Num</div>
  <div class=deeper><span>M</span>Mov</div>
  <div class=ingles><span>,</span> </div>
  <div class=ingles><span>.</span> </div>
+ <div class=ingles><span>/</span> </div>
+ <div class="ingles rshift"><span>Shift</span> </div>
+ <div class="ingles mod"><span>Ctrl</span> </div>
+ <div class="ingles mod"><span>Super</span> </div>
+ <div class="ingles mod"><span>Alt</span> </div>
+ <div class="ingles space"><span> </span> </div>
+ <div class="ingles mod"><span>Alt</span> </div>
+ <div class="ingles mod"><span>Super</span> </div>
+ <div class="ingles mod"><span>Menu</span> </div>
+ <div class="ingles mod"><span>Ctrl</span> </div>
 </div>
 <div class=kebbard>
- <div class=normal><span>Quote</span>"</div>
- <div class=normal><span>Whack</span>\</div>
- <div class=normal><span>Equal</span>=</div>
- <div class=normal><span>Roof</span>^</div>
- <div class=normal><span>Tilde</span>~</div>
- <div class=ingles><span>Y</span> </div>
- <div class=ingles><span>U</span> </div>
- <div class=normal><span>In</span>(</div>
- <div class=normal><span>Out</span>)</div>
- <div class=normal><span>Plus</span>+</div>
- <div class=normal><span>At</span>@</div>
- <div class=normal><span>Star</span>*</div>
- <div class=normal><span>Dollar</span>$</div>
- <div class=normal><span>F</span>Rtrn</div>
- <div class=normal><span>Grave</span>`</div>
- <div class=normal><span>Hash</span>#</div>
- <div class=normal><span>J</span>{</div>
- <div class=normal><span>K</span>}</div>
- <div class=normal><span>Low line</span>_</div>
- <div class=normal><span>;</span>:</div>
- <div class=normal>K</div>
- <div class=ingles><span>Z</span> </div>
- <div class=normal><span>Xclamation</span>!</div>
- <div class=normal><span>Cent</span>%</div>
- <div class=normal><span>Vertical bar</span>|</div>
- <div class=ingles><span>B</span> </div>
- <div class=normal><span>aNd</span>&amp;</div>
- <div class=normal><span>Minus</span>-</div>
- <div class=normal><span>,</span>&lt;</div>
- <div class=normal><span>.</span>&gt;</div>
-</div>
-<div class=kebbard>
- <div class=normal><span>Q</span>Quit</div>
+ <div class=ingles><span>`</span> </div>
+ <div class=ingles><span>1</span> </div>
+ <div class=ingles><span>2</span> </div>
+ <div class=ingles><span>3</span> </div>
+ <div class=ingles><span>4</span> </div>
+ <div class=ingles><span>5</span> </div>
+ <div class=ingles><span>6</span> </div>
+ <div class=ingles><span>7</span> </div>
+ <div class=ingles><span>8</span> </div>
+ <div class=ingles><span>9</span> </div>
+ <div class=ingles><span>0</span> </div>
+ <div class=ingles><span>-</span> </div>
+ <div class=ingles><span>=</span> </div>
+ <div class="ingles bksp"><span>Backspace</span> </div>
+ <div class="ingles tab"><span>Tab</span> </div>
+ <div class=ingles><span>Q</span> </div>
  <div class=sticky><span>W</span>↑</div>
  <div class=ingles><span>E</span> </div>
  <div class=ingles><span>R</span> </div>
@@ -164,6 +166,10 @@ color:red;
  <div class=ingles><span>I</span> </div>
  <div class=ingles><span>O</span> </div>
  <div class=ingles><span>P</span> </div>
+ <div class=ingles><span>[</span> </div>
+ <div class=ingles><span>]</span> </div>
+ <div class="ingles whack"><span>\</span> </div>
+ <div class="ingles caps"><span>Caps</span> </div>
  <div class=sticky><span>A</span>←</div>
  <div class=sticky><span>S</span>↓</div>
  <div class=sticky><span>D</span>→</div>
@@ -174,22 +180,46 @@ color:red;
  <div class=sticky><span>K</span>↑</div>
  <div class=sticky><span>L</span>→</div>
  <div class=ingles><span>;</span> </div>
- <div class=normal>M</div>
+ <div class=ingles><span>'</span> </div>
+ <div class="ingles enter"><span>Enter</span> </div>
+ <div class="ingles lshift"><span>Shift</span> </div>
  <div class=ingles><span>Z</span> </div>
  <div class=sticky><span>X</span>Del</div>
  <div class=ingles><span>C</span> </div>
  <div class=ingles><span>V</span> </div>
  <div class=ingles><span>B</span> </div>
  <div class=ingles><span>N</span> </div>
- <div class=ingles><span>M</span> </div>
+ <div class=normal><span>M</span>Quit</div>
  <div class=ingles><span>,</span> </div>
  <div class=ingles><span>.</span> </div>
+ <div class=ingles><span>/</span> </div>
+ <div class="ingles rshift"><span>Shift</span> </div>
+ <div class="ingles mod"><span>Ctrl</span> </div>
+ <div class="ingles mod"><span>Super</span> </div>
+ <div class="ingles mod"><span>Alt</span> </div>
+ <div class="ingles space"><span> </span> </div>
+ <div class="ingles mod"><span>Alt</span> </div>
+ <div class="ingles mod"><span>Super</span> </div>
+ <div class="ingles mod"><span>Menu</span> </div>
+ <div class="ingles mod"><span>Ctrl</span> </div>
 </div>
-<div class=bigkebbard>
+<div class=kebbard>
+ <div class=ingles><span>`</span> </div>
+ <div class=ingles><span>1</span> </div>
+ <div class=ingles><span>2</span> </div>
+ <div class=ingles><span>3</span> </div>
+ <div class=ingles><span>4</span> </div>
+ <div class=ingles><span>5</span> </div>
+ <div class=ingles><span>6</span> </div>
+ <div class=ingles><span>7</span> </div>
  <div class=sticky><span>8</span>/</div>
  <div class=sticky><span>9</span>*</div>
  <div class=sticky><span>O</span>-</div>
- <div class=normal><span>Q</span>Quit</div>
+ <div class=ingles><span>-</span> </div>
+ <div class=ingles><span>=</span> </div>
+ <div class="ingles bksp"><span>Backspace</span> </div>
+ <div class="ingles tab"><span>Tab</span> </div>
+ <div class=ingles><span>Q</span> </div>
  <div class=ingles><span>W</span> </div>
  <div class=ingles><span>E</span> </div>
  <div class=ingles><span>R</span> </div>
@@ -199,6 +229,10 @@ color:red;
  <div class=sticky><span>I</span>8</div>
  <div class=sticky><span>O</span>9</div>
  <div class=sticky><span>P</span>+</div>
+ <div class=ingles><span>[</span> </div>
+ <div class=ingles><span>]</span> </div>
+ <div class="ingles whack"><span>\</span> </div>
+ <div class="ingles caps"><span>Caps</span> </div>
  <div class=ingles><span>A</span> </div>
  <div class=ingles><span>S</span> </div>
  <div class=sticky><span>D</span>Bksp</div>
@@ -209,20 +243,28 @@ color:red;
  <div class=sticky><span>K</span>5</div>
  <div class=sticky><span>L</span>6</div>
  <div class=sticky><span>;</span>+</div>
- <div class=normal>N</div>
+ <div class=ingles><span>'</span> </div>
+ <div class="ingles enter"><span>Enter</span> </div>
+ <div class="ingles lshift"><span>Shift</span> </div>
  <div class=ingles><span>Z</span> </div>
  <div class=ingles><span>X</span> </div>
  <div class=ingles><span>C</span> </div>
  <div class=ingles><span>V</span> </div>
  <div class=ingles><span>B</span> </div>
- <div class=ingles><span>N</span> </div>
+ <div class=normal><span>N</span>Quit</div>
  <div class=sticky><span>M</span>1</div>
  <div class=sticky><span>,</span>2</div>
  <div class=sticky><span>.</span>3</div>
  <div class=sticky><span>/</span>Rtrn</div>
- <div class=sticky><span> </span>0</div>
- <div class=sticky><span>Alt</span>.</div>
- <div class=sticky><span>Win</span>Rtrn</div>
+ <div class="ingles rshift"><span>Shift</span> </div>
+ <div class="ingles mod"><span>Ctrl</span> </div>
+ <div class="ingles mod"><span>Super</span> </div>
+ <div class="ingles mod"><span>Alt</span> </div>
+ <div class="sticky space"><span> </span>0</div>
+ <div class="sticky mod"><span>Alt</span>.</div>
+ <div class="sticky mod"><span>Super</span>Rtrn</div>
+ <div class="ingles mod"><span>Menu</span> </div>
+ <div class="ingles mod"><span>Ctrl</span> </div>
 </div>
 </body>
 </html>

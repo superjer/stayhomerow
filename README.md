@@ -1,7 +1,9 @@
 stayhomerow
 ===========
 
-Key sequences for X11 that allow you to type difficult keys without leaving the home row.
+In X11, type difficult or unavailable keys without leaving the home row.
+
+![stayhomerow chart](http://www.superjer.com/lies/stayhomerow-xcape.png)
 
 With stayhomerow, tap the  Ctrl  key to switch the keyboard layout to this:
 
